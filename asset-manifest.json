@@ -1,17 +1,17 @@
 {
   "files": {
     "main.css": "/static/css/main.561ecbe7.css",
-    "main.js": "/static/js/main.779b4c6c.js",
+    "main.js": "/static/js/main.106bf25c.js",
     "static/js/787.82224b29.chunk.js": "/static/js/787.82224b29.chunk.js",
     "static/media/Kevin_Kim_Resume.pdf": "/static/media/Kevin_Kim_Resume.a58f9b01ddab1b7d8394.pdf",
     "static/media/downArrow.ico": "/static/media/downArrow.a954229637bea88f41e5.ico",
     "index.html": "/index.html",
     "main.561ecbe7.css.map": "/static/css/main.561ecbe7.css.map",
-    "main.779b4c6c.js.map": "/static/js/main.779b4c6c.js.map",
+    "main.106bf25c.js.map": "/static/js/main.106bf25c.js.map",
     "787.82224b29.chunk.js.map": "/static/js/787.82224b29.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.561ecbe7.css",
-    "static/js/main.779b4c6c.js"
+    "static/js/main.106bf25c.js"
   ]
 }
