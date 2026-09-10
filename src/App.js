@@ -13,10 +13,10 @@ import Footer from './components/Footer';
 import NoPage from "./pages/NoPage";
 import Admin from './pages/Admin';
 // Games
-import TicTacToe from './pages/Games/TicTacToe';
-import TypingGame from './pages/Games/TypingGame';
-import AnagramGame from './pages/Games/AnagramGame';
-import CardGame from './pages/Games/CardGame';
+import TicTacToe from './pages/games/TicTacToe';
+import TypingGame from './pages/games/TypingGame';
+import AnagramGame from './pages/games/AnagramGame';
+import CardGame from './pages/games/CardGame';
 // Data apps
 import ListApp from './pages/Data/ListApp';
 import Chart from './pages/Data/Chart';

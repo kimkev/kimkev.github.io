@@ -18,7 +18,15 @@ const Home = () => {
             <h1>Projects</h1>
             <ul>
               <li><Link to="/apps">Client-side Web Apps</Link></li>
-              <li><a href="https://kimkev.itch.io/">Game Development in Unity</a></li>
+              <li>
+                <a
+                  href="https://play.google.com/store/apps/details?id=com.kimkev.dailydew"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  DailyDew - Android App
+                </a>
+              </li>              <li><a href="https://kimkev.itch.io/">Game Development in Unity</a></li>
             </ul>
           </div>
         </div>
