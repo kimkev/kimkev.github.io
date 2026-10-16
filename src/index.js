@@ -8,12 +8,14 @@ import { createBrowserHistory } from 'history';
 import { HashRouter } from 'react-router-dom';
 import { initGA, trackPageview } from './components/Analytics';
 
-const measurementId = process.env.REACT_APP_GOOGLE_TRACKING_ID;
+const measurementId = 'G-52N2K9V12M';
 initGA(measurementId);
 
-const browserHistory = createBrowserHistory()
+const browserHistory = createBrowserHistory();
 browserHistory.listen(location => {
-  ReactGA.send({ hitType: "pageview", page: location.location.pathname });
+  if (measurementId) {
+    ReactGA.send({ hitType: "pageview", page: location.location.pathname });
+  }
 });
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
