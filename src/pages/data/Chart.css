@@ -1,0 +1,57 @@
+.housing-chart {
+  width: min(1000px, 92%);
+  margin: 0 auto;
+  padding-bottom: 3rem;
+}
+
+.chart-meta {
+  color: #a8a5a0;
+  font-size: 0.9rem;
+}
+
+.chart-canvas {
+  height: 360px;
+  margin: 1.5rem 0;
+}
+
+.chart-table summary {
+  cursor: pointer;
+  padding: 0.5rem 0;
+}
+
+.chart-table-scroll {
+  max-height: 320px;
+  overflow: auto;
+  border: 1px solid #3a3d3f;
+  border-radius: 6px;
+}
+
+.chart-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.chart-table th,
+.chart-table td {
+  padding: 0.4rem 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #2c2f31;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 768px) {
+  .chart-canvas {
+    height: 260px;
+  }
+}
