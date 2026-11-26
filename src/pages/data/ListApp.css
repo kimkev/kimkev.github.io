@@ -1,54 +1,103 @@
 .container-lists {
-    justify-content: start;
-    flex-direction: column;
-    padding: 0 5% 5% 5%;
-    width: 90%;
-    margin: 0 auto;
-
+  justify-content: start;
+  flex-direction: column;
+  padding: 0 5% 5%;
+  width: 90%;
+  margin: 0 auto;
 }
 
-h2 {
-    text-align: center;
+.container-lists h2 {
+  text-align: center;
+}
+
+.list-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.list-buttons button {
+  font-size: 1rem;
+  padding: 0.6rem 1rem;
+}
+
+.list-status {
+  text-align: center;
+  color: #a8a5a0;
+}
+
+.list-error {
+  color: #ff8a80;
 }
 
 .container-sort {
-    margin-bottom: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 10px;
 }
 
-/* Style the default select element */
-select {
-    width: 200px;
-    height: 40px;
-    font-size: 16px;
-    background-color: #fff;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    padding: 10px;
-    cursor: pointer;
-    outline: none;
+.container-sort h2 {
+  margin: 0;
 }
 
 select {
-    margin: 50px;
-    width: 150px;
-    padding: 5px 35px 5px 5px;
-    font-size: 16px;
-    border: 1px solid #CCC;
-    height: 34px;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    background:url(../../../public/favicon/downArrow.ico) 96% / 20% no-repeat #EEE;
-  }
+  width: 180px;
+  height: 40px;
+  font-size: 16px;
+  color: #10131a;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.table-scroll {
+  max-height: 60vh;
+  overflow: auto;
+  border: 1px solid #3a3d3f;
+  border-radius: 6px;
+}
 
 table {
-    border-collapse: collapse;
-    width: 100%;
+  border-collapse: collapse;
+  width: 100%;
 }
 
 th,
 td {
-    border: 1px solid #ddd;
-    padding: 5px;
-    text-align: left;
+  border: 1px solid #2c2f31;
+  padding: 5px 8px;
+  text-align: left;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+}
+
+td {
+  color: #d6d3cd;
+}
+
+.table-empty {
+  text-align: center;
+  color: #a8a5a0;
+  padding: 2rem 0;
+}
+
+@media (max-width: 600px) {
+  .container-lists {
+    width: 100%;
+    padding: 0 1rem 2rem;
+  }
+
+  .container-sort {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  select {
+    width: 100%;
+  }
 }

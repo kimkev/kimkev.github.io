@@ -1,124 +1,152 @@
-import { useState, useEffect } from 'react';
+import { useMemo, useState } from 'react';
+
+import { QUOTES } from '../../data/quotes';
 import DataTable from './DataTable';
 import './ListApp.css';
 
+const SOURCES = [
+  {
+    id: 'holidays',
+    label: 'Canadian Holidays',
+    title: (year) => `${year} Canadian Holidays`,
+    load: async (year) => {
+      const response = await fetch(`https://date.nager.at/api/v3/PublicHolidays/${year}/ca`);
+      if (!response.ok) throw new Error(`Holiday request failed (${response.status})`);
+      return response.json();
+    },
+  },
+  {
+    id: 'trivia',
+    label: 'Trivia',
+    title: () => 'Random Trivia',
+    load: async () => {
+      const response = await fetch('https://opentdb.com/api.php?amount=10');
+      if (!response.ok) throw new Error(`Trivia request failed (${response.status})`);
+      const json = await response.json();
+      return json.results ?? [];
+    },
+  },
+  {
+    id: 'quotes',
+    label: 'Quotes',
+    title: () => 'Programming Quotes',
+    load: async () => QUOTES,
+  },
+  {
+    id: 'users',
+    label: 'Sample Users',
+    title: () => 'Sample Users',
+    load: async () => {
+      const response = await fetch('https://jsonplaceholder.typicode.com/users');
+      if (!response.ok) throw new Error(`Users request failed (${response.status})`);
+      return response.json();
+    },
+  },
+];
+
+const compareValues = (first, second) => {
+  if (first === second) return 0;
+
+  const firstNumber = typeof first === 'number' ? first : Number(first);
+  const secondNumber = typeof second === 'number' ? second : Number(second);
+
+  const bothNumeric =
+    first !== '' &&
+    second !== '' &&
+    Number.isFinite(firstNumber) &&
+    Number.isFinite(secondNumber);
+
+  if (bothNumeric) return firstNumber - secondNumber;
+
+  return String(first ?? '').localeCompare(String(second ?? ''), undefined, { numeric: true });
+};
 
 const ListApp = () => {
-
-  const [data, setData] = useState([]);
+  const [rows, setRows] = useState([]);
   const [columns, setColumns] = useState([]);
   const [title, setTitle] = useState('');
-  const [disabled, setDisabled] = useState(false);
+  const [sortKey, setSortKey] = useState('');
+  const [status, setStatus] = useState('idle');
+  const [error, setError] = useState('');
+  const currentYear = new Date().getFullYear();
 
+  const sortedRows = useMemo(() => {
+    if (!sortKey) return rows;
+    return [...rows].sort((first, second) => compareValues(first[sortKey], second[sortKey]));
+  }, [rows, sortKey]);
 
-  const currentYear = new Date().getFullYear()
-
-
-  const fetchData = async (apiEndpoint, dataTitle) => {
-    // disable mass clicking of fetch button
-    setDisabled(true);
-    setTimeout(() => {
-      setDisabled(false);
-    }, 3000);
+  const handleLoad = async (source) => {
+    setStatus('loading');
+    setError('');
+    setSortKey('');
 
     try {
-      const response = await fetch(apiEndpoint);
-      const jsonData = await response.json();
-      // some API endpoints share inside results
-      if (jsonData.results){
-        setData(jsonData.results);
-      }else {
-        setData(jsonData);
-      }
-      setTitle(dataTitle);
-    } catch (error) {
-      console.error('Error fetching data:', error);
+      const loaded = await source.load(currentYear);
+      const nextRows = Array.isArray(loaded) ? loaded : [];
+
+      setRows(nextRows);
+      setColumns(nextRows.length ? Object.keys(nextRows[0]) : []);
+      setTitle(source.title(currentYear));
+
+      if (!nextRows.length) setError('The source returned no rows.');
+    } catch (loadError) {
+      setRows([]);
+      setColumns([]);
+      setError(loadError.message);
+    } finally {
+      setStatus('idle');
     }
-  }
-
-  // Function to sort data based on the selected sorting option
-  const sortData = (sortingOption) => {
-    const sortedData = [...data];
-    // sortedData.sort((a, b) => a[sortingOption].localeCompare(b[sortingOption]));
-    sortedData.sort((a, b) => {
-      const columnA = a[sortingOption];
-      const columnB = b[sortingOption];
-
-      if (columnA < columnB) {
-        return -1;
-      }
-      if (columnA > columnB) {
-        return 1;
-      }
-      return 0;
-    });
-
-    setData(sortedData);
   };
 
-
-  useEffect(() => {
-      // Dynamically generate columns based on the API data keys
-      if (data.length > 0) {
-        setColumns(Object.keys(data[0]));
-      }
-  }, [data]);
-
-
   return (
-    <>
-      <div className="container-lists">
-        <div>
-          <h3>Lists</h3>
-          <div>
+    <div className="container-lists">
+      <div>
+        <h3>Lists</h3>
+        <div className="list-buttons">
+          {SOURCES.map((source) => (
             <button
-              onClick={() => fetchData(`https://date.nager.at/api/v3/PublicHolidays/${currentYear}/ca`, `${currentYear} Canadian Holidays`)}
-              disabled={disabled}
+              key={source.id}
+              type="button"
+              onClick={() => handleLoad(source)}
+              disabled={status === 'loading'}
             >
-              {currentYear} Canadian Holidays
+              {source.id === 'holidays' ? `${currentYear} ${source.label}` : source.label}
             </button>
-            <button
-              onClick={() => fetchData(`https://opentdb.com/api.php?amount=10`, `Random Trivias`)}
-              disabled={disabled}
-            >
-              Trivias
-            </button>
-            <button
-              onClick={() => fetchData('https://api.quotable.io/quotes/random?limit=10', 'Random Quotes')}
-              disabled={disabled}
-            >
-              Quotes
-            </button>
-            <button
-              onClick={() => fetchData('https://jsonplaceholder.typicode.com/posts', 'Sample Users')}
-              disabled={disabled}
-            >
-              Sample Users
-            </button>
-          </div>
+          ))}
         </div>
-
-        <div>
-          <div className='container-sort'>
-            <h2>{title}</h2>
-            <div>
-              <label>Sort By </label>
-              <select className='custom-select' onChange={(e) => sortData(e.target.value)}>
-                {columns.map(column => (
-                  <option key={column} value={column}>
-                    {column}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-          <div>
-            <DataTable data={data} columns={columns} />
-          </div>
-        </div>
+        {status === 'loading' && <p className="list-status">Loading…</p>}
+        {error && (
+          <p className="list-status list-error" role="alert">
+            {error}
+          </p>
+        )}
       </div>
-    </>
 
+      <div>
+        <div className="container-sort">
+          <h2>{title}</h2>
+          <div>
+            <label htmlFor="sort-column">Sort by</label>
+            <select
+              id="sort-column"
+              className="custom-select"
+              value={sortKey}
+              onChange={(event) => setSortKey(event.target.value)}
+              disabled={!columns.length}
+            >
+              <option value="">--</option>
+              {columns.map((column) => (
+                <option key={column} value={column}>
+                  {column}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <DataTable rows={sortedRows} columns={columns} />
+      </div>
+    </div>
   );
 };
 
