@@ -1,265 +1,195 @@
-import { useState, useEffect } from "react";
+import { useCallback, useEffect, useState } from 'react';
+
+import { compareHands, describeHand, evaluateHand } from '../../lib/pokerHand';
 import './CardGame.css';
 
+const API = 'https://deckofcardsapi.com/api/deck';
+const HAND_SIZE = 5;
+
+const drawCards = async (deckId, count) => {
+  if (count === 0) return { cards: [], remaining: null };
+
+  const response = await fetch(`${API}/${deckId}/draw/?count=${count}`);
+  if (!response.ok) throw new Error(`Card draw failed (${response.status})`);
+
+  return response.json();
+};
+
+const randomIndices = (length, count) => {
+  const indices = Array.from({ length }, (_, index) => index);
+
+  for (let index = indices.length - 1; index > 0; index -= 1) {
+    const swap = Math.floor(Math.random() * (index + 1));
+    [indices[index], indices[swap]] = [indices[swap], indices[index]];
+  }
+
+  return indices.slice(0, count);
+};
+
 const CardGame = () => {
+  const [deckId, setDeckId] = useState('');
+  const [remaining, setRemaining] = useState(52);
+  const [userCards, setUserCards] = useState([]);
+  const [computerCards, setComputerCards] = useState([]);
+  const [selected, setSelected] = useState(() => new Set());
+  const [status, setStatus] = useState('Shuffling a new deck…');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [hasMulliganed, setHasMulliganed] = useState(false);
 
-    const [computerCards, setComputerCards] = useState([]);
-    const [userCards, setUserCards] = useState([]);
-    const [deckId, setDeckId] = useState('');
-    const [remainingDeck, setRemainingDeck] = useState(52); // Assuming a full deck of 52 cards
-    // Instructions
-    const [instructions, setInstructions] = useState(`Beat the computer's hand by selecting cards to remove from your hand. Click the deck to reset.`);
-    // Winner String
-    const [winner, setWinner] = useState('');
-    const [isFirstRound, setIsFirstRound] = useState(true);
+  const startGame = useCallback(async () => {
+    setLoading(true);
+    setError('');
+    setHasMulliganed(false);
+    setSelected(new Set());
+    setStatus('Shuffling a new deck…');
 
+    try {
+      const deckResponse = await fetch(`${API}/new/shuffle/?deck_count=1`);
+      if (!deckResponse.ok) throw new Error(`Deck request failed (${deckResponse.status})`);
+      const deck = await deckResponse.json();
 
-    // Function to initialize a new deck and draw cards
-    const initializeGame = async () => {
-        setWinner('');
-        setIsFirstRound(true);
-        try {
-            // Create a new deck
-            const newDeckResponse = await fetch('https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1');
-            const newDeckData = await newDeckResponse.json();
-            const deckId = newDeckData.deck_id;
-            setDeckId(deckId);
+      const [userDraw, computerDraw] = await Promise.all([
+        drawCards(deck.deck_id, HAND_SIZE),
+        drawCards(deck.deck_id, HAND_SIZE),
+      ]);
 
-            // Draw cards for Computer 
-            const computerResponse = await fetch(`https://deckofcardsapi.com/api/deck/${deckId}/draw/?count=5`);
-            const computerCards = await computerResponse.json();
-            setComputerCards(computerCards.cards);
+      setDeckId(deck.deck_id);
+      setUserCards(userDraw.cards);
+      setComputerCards(computerDraw.cards);
+      setRemaining(computerDraw.remaining ?? deck.remaining - HAND_SIZE * 2);
+      setStatus('Tap cards to select them, then mulligan once to replace them.');
+    } catch (startError) {
+      setError(startError.message);
+      setStatus('Could not start the game.');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
-            // Draw cards for User
-            const userResponse = await fetch(`https://deckofcardsapi.com/api/deck/${deckId}/draw/?count=5`);
-            const userCards = await userResponse.json();
-            setUserCards(userCards.cards);
+  useEffect(() => {
+    startGame();
+  }, [startGame]);
 
-            setRemainingDeck(newDeckData.remaining - 10); // Subtract 10 cards drawn for both players
-        } catch (error) {
-            console.error('Error initializing game:', error);
-            setInstructions('Failed to initialize the game. Please try again later.'); // Update placeholder message in case of error
-        }
-    };
+  const toggleCard = (index) => {
+    if (hasMulliganed || loading) return;
 
-    useEffect(() => {
-        initializeGame();
-    }, []); // Empty dependency array to run effect only once when component mounts
+    setSelected((current) => {
+      const next = new Set(current);
+      if (next.has(index)) next.delete(index);
+      else next.add(index);
+      return next;
+    });
+  };
 
+  const mulligan = async () => {
+    if (loading || hasMulliganed) return;
 
-    // Function to handle card removal and drawing new cards from the deck for User
-    const handleCardRemovalAndDrawUser = async (selectedCardIndices) => {
-        setIsFirstRound(false);
+    setLoading(true);
+    setError('');
 
-        try {
-            // Remove selected cards from player's hand
-            const newUserCards = userCards.filter((card, index) => !selectedCardIndices.includes(index));
+    try {
+      const replaceCount = Math.min(selected.size, userCards.length);
+      const computerReplacements = Math.min(replaceCount, computerCards.length);
 
-            // Draw new cards from the deck
-            const drawResponse = await fetch(`https://deckofcardsapi.com/api/deck/${deckId}/draw/?count=${selectedCardIndices.length}`);
-            const drawData = await drawResponse.json();
-            const drawnCards = drawData.cards;
+      const [userDraw, computerDraw] = await Promise.all([
+        drawCards(deckId, replaceCount),
+        drawCards(deckId, computerReplacements),
+      ]);
 
-            // Insert drawn cards at the same position where selected cards were removed
-            const updatedUserCards = [...newUserCards];
-            selectedCardIndices.forEach((index, i) => {
-                updatedUserCards.splice(index, 0, drawnCards[i]);
-            });
+      const nextUserCards = [...userCards.filter((_, index) => !selected.has(index)), ...userDraw.cards];
 
-            // Set the new player 1's hand with updated cards
-            setUserCards(updatedUserCards);
+      const discarded = new Set(randomIndices(computerCards.length, computerReplacements));
+      const nextComputerCards = [
+        ...computerCards.filter((_, index) => !discarded.has(index)),
+        ...computerDraw.cards,
+      ];
 
-            // Update remaining deck count
-            setRemainingDeck(prevRemainingDeck => prevRemainingDeck - selectedCardIndices.length);
-        } catch (error) {
-            console.error('Error handling card removal and drawing for player 1:', error);
-        }
-    };
+      const userHand = evaluateHand(nextUserCards);
+      const computerHand = evaluateHand(nextComputerCards);
+      const verdict = compareHands(userHand, computerHand);
 
-    // Function to handle card removal and drawing new cards from the deck for player 2
-    const handleCardRemovalAndDrawComputer = async () => {
-        try {
-            // Determine which cards to remove from player 2's hand to improve the hand strength
-            // For simplicity, let's assume the computer randomly removes up to 5 cards
-            const randomIndices = [];
-            while (randomIndices.length < 5 && randomIndices.length < computerCards.length) {
-                const randomIndex = Math.floor(Math.random() * computerCards.length);
-                if (!randomIndices.includes(randomIndex)) {
-                    randomIndices.push(randomIndex);
-                }
-            }
+      setUserCards(nextUserCards);
+      setComputerCards(nextComputerCards);
+      setSelected(new Set());
+      setHasMulliganed(true);
+      setRemaining((current) => Math.max(0, current - replaceCount - computerReplacements));
 
-            // Remove selected cards from player 2's hand
-            const newComputerCards = computerCards.filter((card, index) => !randomIndices.includes(index));
+      if (verdict > 0) setStatus(`You win with ${describeHand(nextUserCards)}.`);
+      else if (verdict < 0) setStatus(`Computer wins with ${describeHand(nextComputerCards)}.`);
+      else setStatus(`Tie: both have ${describeHand(nextUserCards)}.`);
+    } catch (mulliganError) {
+      setError(mulliganError.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-            // Draw new cards from the deck
-            const drawResponse = await fetch(`https://deckofcardsapi.com/api/deck/${deckId}/draw/?count=${randomIndices.length}`);
-            const drawData = await drawResponse.json();
-            const drawnCards = drawData.cards;
+  const yourHand = userCards.length === HAND_SIZE ? describeHand(userCards) : '';
+  const computerHand = computerCards.length === HAND_SIZE ? describeHand(computerCards) : '';
 
-            // Set the new player 2's hand with drawn cards
-            setComputerCards([...newComputerCards, ...drawnCards]);
+  return (
+    <div className="container container-cardgame">
+      <h1>Mulligan</h1>
 
-            // Update remaining deck count
-            setRemainingDeck(prevRemainingDeck => prevRemainingDeck - randomIndices.length);
-        } catch (error) {
-            console.error('Error handling card removal and drawing for computer:', error);
-        }
-    };
+      <div className="instructions-container">
+        <p className="instructions-message">{status}</p>
+        {error && <p className="card-error">{error}</p>}
+      </div>
 
-    const evaluateHandStrength = (cards) => {
-        const cardValues = cards.map(card => card.value);
-        const cardSuits = cards.map(card => card.suit);
-
-        const valueMap = {
-            "ACE": 14,
-            "KING": 13,
-            "QUEEN": 12,
-            "JACK": 11,
-            "10": 10,
-            "9": 9,
-            "8": 8,
-            "7": 7,
-            "6": 6,
-            "5": 5,
-            "4": 4,
-            "3": 3,
-            "2": 2
-        };
-
-        const numericValues = cardValues.map(value => valueMap[value]).sort((a, b) => a - b);
-
-        // Count occurrences of each value and suit
-        const valueCounts = {};
-        const suitCounts = {};
-    
-        numericValues.forEach(value => valueCounts[value] = (valueCounts[value] || 0) + 1);
-        cardSuits.forEach(suit => suitCounts[suit] = (suitCounts[suit] || 0) + 1);
-    
-        const uniqueValues = Object.keys(valueCounts).length;
-        const valuesArray = Object.values(valueCounts);
-    
-        const isFlush = Object.keys(suitCounts).length === 1;
-        const isStraight = uniqueValues === 5 && numericValues[4] - numericValues[0] === 4;
-        const isRoyal = isStraight && isFlush && numericValues[0] === 10;
-    
-        // Determine hand strength based on count and patterns
-        if (isRoyal) return "Royal Flush";
-        if (isStraight && isFlush) return "Straight Flush";
-        if (valuesArray.includes(4)) return "Four of a Kind";
-        if (valuesArray.includes(3) && valuesArray.includes(2)) return "Full House";
-        if (isFlush) return "Flush";
-        if (isStraight) return "Straight";
-        if (valuesArray.includes(3)) return "Three of a Kind";
-        if (valuesArray.filter(count => count === 2).length === 2) return "Two Pair";
-        if (valuesArray.includes(2)) return "One Pair";
-    
-        // Default to High Card if no other hand is found
-        const highCardValue = Math.max(...numericValues);
-        return `High Card (value of ${highCardValue})`;
-    };
-
-    // Function to determine the winner based on hand strength
-    const determineWinner = () => {
-        const computerHandStrength = evaluateHandStrength(computerCards);
-        const userHandStrength = evaluateHandStrength(userCards);
-
-        let resultMessage;
-        // Compare hand strengths and determine the winner
-        if (computerHandStrength === userHandStrength) {
-            resultMessage = `It's a tie! Both have ${userHandStrength}.`;
-        } else if (handRank(computerHandStrength) > handRank(userHandStrength)) {
-            resultMessage = `Computer wins with ${computerHandStrength}!`;
-        } else {
-            resultMessage = `You win with ${userHandStrength}!`;
-        }
-        setWinner(resultMessage);
-    };
-
-
-    // Helper function to rank hands for comparison
-    const handRank = (hand) => {
-        const handRanks = {
-            "Royal Flush": 10,
-            "Straight Flush": 9,
-            "Four of a Kind": 8,
-            "Full House": 7,
-            "Flush": 6,
-            "Straight": 5,
-            "Three of a Kind": 4,
-            "Two Pair": 3,
-            "One Pair": 2,
-            "High Card": 1
-        };
-        return handRanks[hand];
-    };
-
-    useEffect(() => {
-        if (!isFirstRound && userCards.length === 5 && computerCards.length === 5) {
-            determineWinner();
-        }
-    }, [userCards, computerCards, isFirstRound]);
-
-
-    return (
-        <div className="container container-cardgame">
-            <div className="instructions-container">
-                <p className="instructions-message">{instructions}</p>
-            </div>
-            <div className="winner-container">
-                <p className="winner-message">{winner}</p>
-            </div>
-            <div className="card-game-container">
-                <div className="left-section">
-                    <h2>Deck</h2>
-                    <div className="card deck" onClick={() => initializeGame()}>
-                        {remainingDeck}
-                    </div>
-                </div>
-                <div className='hand-container'>
-                    <div className="player-container">
-                        <h2>Computer's Cards</h2>
-                        <div className="card-container">
-                            {computerCards.map((card, index) => (
-                                <div className="card computer-card" key={index}>
-                                    <img src={card.image} alt={`${card.value} of ${card.suit}`} />
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                    <div className="player-container">
-                        <h2>Your Cards</h2>
-                        <div className="card-container">
-                            {userCards.map((card, index) => (
-                                <div
-                                    className={`card user-card ${card.selected ? 'selected' : ''}`}
-                                    key={index}
-                                    onClick={() => {
-                                        const updatedUserCards = [...userCards];
-                                        updatedUserCards[index].selected = !updatedUserCards[index].selected;
-                                        setUserCards(updatedUserCards);
-                                    }}
-                                >
-                                    <img src={card.image} alt={`${card.value} of ${card.suit}`} />
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                    <button onClick={() => {
-                        const selectedCardIndices = userCards.reduce((indices, card, index) => {
-                            if (card.selected) {
-                                indices.push(index);
-                            }
-                            return indices;
-                        }, []);
-                        handleCardRemovalAndDrawComputer();
-                        handleCardRemovalAndDrawUser(selectedCardIndices);
-                    }}>Mulligan</button>
-                </div>
-
-            </div>
+      <div className="card-game-container">
+        <div className="left-section">
+          <h2>Deck</h2>
+          <button
+            type="button"
+            className="deck"
+            onClick={startGame}
+            aria-label="Shuffle a new deck and deal again"
+          >
+            {remaining}
+          </button>
         </div>
-    );
+
+        <div className="hand-container">
+          <div className="player-container">
+            <h2>Computer&apos;s Cards</h2>
+            <div className="card-container">
+              {computerCards.map((card, index) => (
+                <div className="card computer-card" key={`${card.code}-${index}`}>
+                  <img src={card.image} alt={`${card.value} of ${card.suit}`} />
+                </div>
+              ))}
+            </div>
+            {computerHand && <p className="hand-name">{computerHand}</p>}
+          </div>
+
+          <div className="player-container">
+            <h2>Your Cards</h2>
+            <div className="card-container">
+              {userCards.map((card, index) => (
+                <button
+                  type="button"
+                  className={`card user-card ${selected.has(index) ? 'selected' : ''}`}
+                  key={`${card.code}-${index}`}
+                  onClick={() => toggleCard(index)}
+                  aria-pressed={selected.has(index)}
+                  aria-label={`${card.value} of ${card.suit}`}
+                  disabled={hasMulliganed || loading}
+                >
+                  <img src={card.image} alt="" />
+                </button>
+              ))}
+            </div>
+            {yourHand && <p className="hand-name">{yourHand}</p>}
+          </div>
+
+          <button type="button" className="mulligan-button" onClick={mulligan} disabled={loading}>
+            Mulligan {selected.size > 0 ? `(${selected.size})` : ''}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default CardGame;

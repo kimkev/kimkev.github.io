@@ -84,3 +84,56 @@
         0 0 0 2px gold inset;
     /* Inset shadow to maintain size */
 }
+.card.user-card {
+  padding: 0;
+  cursor: pointer;
+  background-color: #fff;
+}
+
+.card.user-card:disabled {
+  cursor: default;
+}
+
+.card.user-card.selected {
+  border: 2px solid gold;
+  box-shadow: 0 0 8px gold;
+}
+
+.hand-name {
+  color: #a8a5a0;
+  margin: 0.25rem 0 0;
+}
+
+.card-error {
+  color: #ff8a80;
+}
+
+@media (max-width: 768px) {
+  .container-cardgame {
+    width: 92%;
+  }
+
+  .card-game-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .left-section {
+    max-width: none;
+  }
+
+  .card-container {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    justify-content: flex-start;
+    max-width: 92vw;
+  }
+
+  .card,
+  .deck {
+    width: 64px;
+    height: 96px;
+    flex: 0 0 auto;
+  }
+}
