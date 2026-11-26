@@ -49,3 +49,45 @@
 .incorrect {
     color: rgb(255, 51, 51);
 }
+.pending {
+  color: #8c8a86;
+}
+
+.current {
+  border-bottom: 2px solid #82b1ff;
+}
+
+.typing-instructions {
+  color: #a8a5a0;
+}
+
+.typing-stats {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.5rem;
+  margin: 1rem 0;
+  font-size: 1.1rem;
+}
+
+.typing-result {
+  color: #6ee7a0;
+}
+
+.container-typinggame textarea.input {
+  width: min(720px, 90%);
+  font-family: inherit;
+  font-size: 1.1rem;
+  color: inherit;
+  background-color: #1f2224;
+  border: 1px solid #3a3d3f;
+  border-radius: 6px;
+  resize: vertical;
+}
+
+@media (max-width: 600px) {
+  .randomText {
+    font-size: 1.35rem;
+    height: 12rem;
+  }
+}

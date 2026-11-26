@@ -1,104 +1,120 @@
-import { useState, useEffect, useRef } from "react";
-import "./TypingGame.css";
+import { useEffect, useRef, useState } from 'react';
+
+import { PASSAGES } from '../../data/passages';
+import './TypingGame.css';
+
+const TIME_LIMIT = 30;
+
+const pickPassage = () => PASSAGES[Math.floor(Math.random() * PASSAGES.length)];
 
 const TypingGame = () => {
-    const timeLimit = 30;
-    const [text, setText] = useState("");
-    const [userText, setUserText] = useState("");
-    const [timeRemaining, setTimeRemaining] = useState(30);
-    const [wpm, setWpm] = useState(0);
-    const [isStarted, setIsStarted] = useState(false);
-    const inputRef = useRef(null);
+  const [passage, setPassage] = useState(pickPassage);
+  const [typed, setTyped] = useState('');
+  const [timeLeft, setTimeLeft] = useState(TIME_LIMIT);
+  const [isRunning, setIsRunning] = useState(false);
+  const inputRef = useRef(null);
 
-    const getHighlightedText = () => {
-        let correctText = "";
-        for (let i = 0; i < text.length; i++) {
-            if (i < userText.length && text[i] === userText[i]) {
-                correctText += `<span class="correct">${text[i]}</span>`;
-            } else {
-                correctText += `<span class="incorrect">${text[i]}</span>`;
-            }
+  useEffect(() => {
+    if (!isRunning) return undefined;
+
+    const intervalId = setInterval(() => {
+      setTimeLeft((current) => {
+        if (current <= 1) {
+          setIsRunning(false);
+          return 0;
         }
-        return { __html: correctText };
-    };
+        return current - 1;
+      });
+    }, 1000);
 
-    const handleChange = (event) => {
-        setUserText(event.target.value);
-    };
+    return () => clearInterval(intervalId);
+  }, [isRunning]);
 
-    const resetGame = () => {
-        setIsStarted(false);
-        setText("");
-        setUserText("");
-        setTimeRemaining(timeLimit);
-        setWpm(0);
-    };
+  const startGame = () => {
+    setPassage(pickPassage());
+    setTyped('');
+    setTimeLeft(TIME_LIMIT);
+    setIsRunning(true);
+    inputRef.current?.focus();
+  };
 
-    const startGame = async () => {
-        setUserText("");
-        setText(await getWords());
-        setIsStarted(true);
-        setTimeRemaining(timeLimit);
-        setWpm(0);
-        inputRef.current.focus();
-    };
+  const resetGame = () => {
+    setTyped('');
+    setTimeLeft(TIME_LIMIT);
+    setIsRunning(false);
+    inputRef.current?.focus();
+  };
 
-    const getWord = async () => {
-        const wordAPI = 'https://random-word-api.herokuapp.com/word?length=3';
-        const response = await fetch(wordAPI);
-        const data = await response.json();
-        return data[0];
-    }
+  const elapsedSeconds = TIME_LIMIT - timeLeft;
+  const wordsTyped = typed.trim() ? typed.trim().split(/\s+/).length : 0;
+  const wpm = elapsedSeconds > 0 ? Math.round(wordsTyped / (elapsedSeconds / 60)) : 0;
+  const finished = timeLeft === 0;
 
-    const getWords = async () => {
-        const word = await getWord();
-        const wordSetAPI = 'https://api.datamuse.com/words?ml=';
-        const response = await fetch(`${wordSetAPI}${word}&max=33`);
-        const data = await response.json();
-        const words = data.map(words => words.word).join(" ");
-        return words;
-    }
+  let correctCharacters = 0;
+  for (let index = 0; index < typed.length; index += 1) {
+    if (typed[index] === passage[index]) correctCharacters += 1;
+  }
+  const accuracy = typed.length ? Math.round((correctCharacters / typed.length) * 100) : 100;
 
+  return (
+    <div className="container container-typinggame">
+      <h1>Typing Test</h1>
 
-    useEffect(() => {
-        if (timeRemaining === 0) {
-            const words = userText.split(" ").length;
-            setWpm(words / (timeLimit / 60));
-        }
-    }, [userText, timeRemaining]);
+      <p className="typing-instructions">
+        Type the passage below. You have {TIME_LIMIT} seconds.
+      </p>
 
-    useEffect(() => {
-        if (isStarted && timeRemaining > 0) {
-            const intervalId = setInterval(() => {
-                setTimeRemaining(timeRemaining - 1);
-            }, 1000);
-            return () => clearInterval(intervalId);
-        }
-    }, [isStarted, timeRemaining]);
+      <div className="randomText" aria-hidden="true">
+        {passage.split('').map((character, index) => {
+          let stateClass = 'pending';
+          if (index < typed.length) {
+            stateClass = typed[index] === character ? 'correct' : 'incorrect';
+          }
 
-    return (
-        <div className="container container-typinggame">
-            <div className="randomText" dangerouslySetInnerHTML={getHighlightedText()} />
-            <textarea 
-                className="input" 
-                ref={inputRef} 
-                rows={1} 
-                value={userText} 
-                onChange={handleChange} 
-                disabled={timeRemaining === 0} 
-            />
-            <h4 className="timer">WPM: {wpm.toFixed(3)} </h4>
-            <h3>  Time remaining: {timeRemaining}</h3>
-            <div className="buttons">
-                <button className="start-button" onClick={startGame}>
-                    Start
-                </button>
-                <button className="reset-button" onClick={resetGame}>
-                    Reset
-                </button>
-            </div>
-        </div>
-    );
+          return (
+            <span
+              key={`${index}-${character}`}
+              className={`${stateClass}${index === typed.length ? ' current' : ''}`}
+            >
+              {character}
+            </span>
+          );
+        })}
+      </div>
+
+      <label className="visually-hidden" htmlFor="typing-input">
+        Type the passage here
+      </label>
+      <textarea
+        id="typing-input"
+        className="input"
+        ref={inputRef}
+        rows={2}
+        value={typed}
+        onChange={(event) => setTyped(event.target.value)}
+        disabled={finished}
+        autoComplete="off"
+        spellCheck="false"
+      />
+
+      <div className="typing-stats" role="status">
+        <span>Time: {timeLeft}s</span>
+        <span>WPM: {wpm}</span>
+        <span>Accuracy: {accuracy}%</span>
+      </div>
+
+      {finished && <p className="typing-result">Time is up. Start again for a new passage.</p>}
+
+      <div className="buttons">
+        <button type="button" className="start-button" onClick={startGame}>
+          Start
+        </button>
+        <button type="button" className="reset-button" onClick={resetGame}>
+          Reset
+        </button>
+      </div>
+    </div>
+  );
 };
 
 export default TypingGame;
