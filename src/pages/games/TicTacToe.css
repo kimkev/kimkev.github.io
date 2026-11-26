@@ -11,9 +11,7 @@
   height: 300px;
   justify-content: center;
   align-items: center;
-  margin: auto;
-  margin-top: 50px;
-  margin-bottom: 50px;
+  margin: 50px auto;
 }
 
 .square {
@@ -23,24 +21,45 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  font-family: inherit;
   font-size: 50px;
   font-weight: bold;
+  color: inherit;
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  cursor: pointer;
+}
+
+.square:hover:not(:disabled) {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.square:disabled {
+  opacity: 1;
+  cursor: default;
+}
+
+.square:focus-visible {
+  outline: 2px solid #82b1ff;
+  outline-offset: -2px;
 }
 
 .winning {
-  animation: winning-animation 1s ease-in-out forwards;
+  background-color: rgba(0, 193, 80, 0.35);
 }
 
-@keyframes winning-animation {
-  0% {
-    background-color: transparent;
+@media (max-width: 480px) {
+  .board {
+    grid-template-columns: repeat(3, 84px);
+    grid-template-rows: repeat(3, 84px);
+    width: 252px;
+    height: 252px;
   }
 
-  50% {
-    background-color: #00c150;
-  }
-
-  100% {
-    background-color: transparent;
+  .square {
+    width: 84px;
+    height: 84px;
+    font-size: 42px;
   }
 }
