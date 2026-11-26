@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import DataTable from './DataTable.js';
+import { useState, useEffect } from 'react';
+import DataTable from './DataTable';
 import './ListApp.css';
 
 

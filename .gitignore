@@ -8,8 +8,9 @@
 # testing
 /coverage
 
-# production
-/build
+# build output
+/dist
+/.vite
 
 # firebase
 .firebase

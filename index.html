@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Kevin Kim — Web Developer</title>
+    <meta
+      name="description"
+      content="Kevin Kim is a web developer in Ontario, Canada. Client-side web apps, mini-games, and data experiments."
+    />
+    <meta name="theme-color" content="#181a1b" />
+    <link rel="icon" href="/favicon/favicon.ico" />
+    <link rel="apple-touch-icon" href="/favicon/apple-touch-icon.png" />
+    <link rel="manifest" href="/favicon/site.webmanifest" />
+    <link rel="canonical" href="https://kimkev.github.io/" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Kevin Kim" />
+    <meta property="og:title" content="Kevin Kim — Web Developer" />
+    <meta
+      property="og:description"
+      content="Client-side web apps, mini-games, and data experiments by Kevin Kim."
+    />
+    <meta property="og:url" content="https://kimkev.github.io/" />
+    <meta property="og:image" content="https://kimkev.github.io/favicon/android-chrome-512x512.png" />
+    <meta name="twitter:card" content="summary" />
+
+    <script>
+      // Restore the deep link forwarded by public/404.html on GitHub Pages.
+      (function () {
+        var redirect = sessionStorage.getItem('spa-redirect');
+        if (redirect) {
+          sessionStorage.removeItem('spa-redirect');
+          history.replaceState(null, '', redirect);
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
