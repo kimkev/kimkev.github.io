@@ -40,3 +40,24 @@ h1 {
     justify-content: center;
     margin:10px;
 }
+.anagram-correct {
+    color: #6ee7a0;
+}
+
+.anagram-incorrect {
+    color: #ff8a80;
+}
+
+.difficulty-buttons button[aria-pressed='true'] {
+    background-color: #82b1ff;
+    color: #10131a;
+}
+
+@media (max-width: 480px) {
+    .scrambled-word {
+        font-size: 34px;
+        letter-spacing: 6px;
+        text-align: center;
+        word-break: break-all;
+    }
+}
