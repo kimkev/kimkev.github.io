@@ -44,20 +44,22 @@ const App = () => {
     <div className="main-container">
       <div className="content">
         <Navigation />
-        <Suspense fallback={<Loading />}>
-          <Routes>
-            <Route index element={<Home />} />
-            <Route path="apps" element={<Apps />} />
-            <Route path="games/tic-tac-toe" element={<TicTacToe />} />
-            <Route path="games/typing" element={<TypingGame />} />
-            <Route path="games/anagram" element={<AnagramGame />} />
-            <Route path="games/mulligan" element={<CardGame />} />
-            <Route path="data/lists" element={<ListApp />} />
-            <Route path="data/chart" element={<Chart />} />
-            <Route path="admin" element={<Admin />} />
-            <Route path="*" element={<NoPage />} />
-          </Routes>
-        </Suspense>
+        <main>
+          <Suspense fallback={<Loading />}>
+            <Routes>
+              <Route index element={<Home />} />
+              <Route path="apps" element={<Apps />} />
+              <Route path="games/tic-tac-toe" element={<TicTacToe />} />
+              <Route path="games/typing" element={<TypingGame />} />
+              <Route path="games/anagram" element={<AnagramGame />} />
+              <Route path="games/mulligan" element={<CardGame />} />
+              <Route path="data/lists" element={<ListApp />} />
+              <Route path="data/chart" element={<Chart />} />
+              <Route path="admin" element={<Admin />} />
+              <Route path="*" element={<NoPage />} />
+            </Routes>
+          </Suspense>
+        </main>
       </div>
       <Footer isHomePage={isHomePage} />
     </div>
