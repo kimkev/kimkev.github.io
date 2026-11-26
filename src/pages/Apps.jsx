@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import './Apps.css';
 
 const Apps = () => (
-  <div className="container">
+  <div className="apps-container">
     <div className="col">
       <h2>Mini-Games</h2>
       <ul className="home-list col-A">
