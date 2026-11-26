@@ -14,13 +14,13 @@ footer {
 }
 
 .Admin {
-  opacity: 0.35;
-  font-size: 0.9rem;
+  color: #a8a5a0;
+  font-size: 0.85rem;
 }
 
 .Admin:hover,
 .Admin:focus-visible {
-  opacity: 1;
+  color: #ffffff;
 }
 
 @media (max-width: 767px) {

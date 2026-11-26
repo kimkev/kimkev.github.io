@@ -40,7 +40,7 @@ const NavigationBar = () => {
   return (
     <>
       <nav className={isNotHomePage ? 'navbar active' : 'navbar'}>
-        <Link to="/" aria-label="Kevin Kim — home">
+        <Link to="/">
           <div className="navbar-title">{title}</div>
         </Link>
 
