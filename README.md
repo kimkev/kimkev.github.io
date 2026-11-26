@@ -1,120 +1,142 @@
-Source code for gh-pages branch
+# kimkev.github.io
 
-Live demo is currently on https://kimkev.github.io
+Personal site and a set of small browser apps: mini-games, a data table, and a housing-index
+chart. Static site, no backend of its own.
 
+- Primary: https://kimkev.github.io
+- Mirror: https://kimkev.web.app
 
+## Stack
 
-Information for picking this project up:
-1. npm run deploy : This script will deploy the source code to gh-pages branch of the project. 
-   It will be hosted on the package.json's homepage link (double check routerlinks work before creating live link)
-2. This project is hosted on the same host as github pages (i.e. kimkev.github.io) so everything created here is an extension to that unless the repository is renamed
+| Area | Choice |
+| --- | --- |
+| Build | Vite 8 |
+| UI | React 19, React Router 7 |
+| Charts | chart.js 4 via react-chartjs-2 |
+| Analytics | react-ga4 (GA4, measurement `G-52N2K9V12M`) |
+| Admin | Firebase Auth + Firestore (read-only snapshot) |
+| Tests | Vitest, Testing Library, jsdom |
+| Lint/format | ESLint 9 flat config, Prettier |
+| Node | 24 (`.nvmrc`) |
 
-Integrated with https://github.com/gitname/react-gh-pages
+## Scripts
 
----
-
-This is currently a WIP
-
-## Firebase deployment (base page is deployed):
-have firebase installed 
-
-```npm install -g firebase-tools```
-
-login to firebase - opens browser
-
-```
-firebase login
-firebase login --reauth  // run this if authentication issues
-```
-
-Initialize firebase in project (root directory)
-
-```firebase init```
-
-setup process
-```
-Hosting: select hosting
-Project: Choose an existing Firebase project or create a new one.
-Public Directory: enter build (the default output directory for create-react-app).
-Single-Page App: Choose Yes when asked if this is a single-page app.
-Overwrite Files: If you’re asked to overwrite any files, you can select "No" if you have already configured your project.
+```bash
+npm run dev            # dev server, http://localhost:3000
+npm run build          # production build to dist/
+npm run preview        # serve dist/ locally
+npm run lint           # eslint .
+npm run test           # vitest run
+npm run test:watch     # vitest
+npm run format         # prettier --write .
+npm run sync:analytics # pull GA4 into Firestore (CI only)
 ```
 
+## Local setup
 
-run a script deploy to firebase in package.json
+```bash
+npm ci
+cp .env.example .env   # fill in values
+npm run dev
 ```
-"deploy": "npm run build && firebase deploy"
+
+Missing env values degrade gracefully: analytics stays off and `/admin` reports that it is not
+configured. The rest of the site works.
+
+## Environment variables
+
+All variables are build-time. Anything prefixed `VITE_` ends up in the public bundle, so it must
+never hold a secret.
+
+| Variable | Purpose |
+| --- | --- |
+| `VITE_GA_MEASUREMENT_ID` | GA4 measurement ID |
+| `VITE_FIREBASE_API_KEY` | Firebase web config (public identifier) |
+| `VITE_FIREBASE_AUTH_DOMAIN` | Firebase web config |
+| `VITE_FIREBASE_PROJECT_ID` | Firebase web config |
+| `VITE_FIREBASE_STORAGE_BUCKET` | Firebase web config |
+| `VITE_FIREBASE_MESSAGING_SENDER_ID` | Firebase web config |
+| `VITE_FIREBASE_APP_ID` | Firebase web config |
+| `VITE_ADMIN_EMAIL` | The only Google account allowed to read `/admin` |
+| `GA_PROPERTY_ID` | Numeric GA4 property ID, used by the sync script |
+
+`FIREBASE_SERVICE_ACCOUNT` (full service-account JSON) exists only as a GitHub Actions secret.
+
+## Routing
+
+`BrowserRouter` with clean paths (`/apps`, `/games/typing`, `/data/chart`).
+
+GitHub Pages cannot rewrite requests, so `public/404.html` stores the requested path in
+`sessionStorage` and redirects to the shell, which restores it with `history.replaceState`.
+Firebase Hosting uses a normal SPA rewrite in `firebase.json`.
+
+## Deploy
+
+Every push to `master` runs `.github/workflows/deploy.yml`:
+
+1. `npm ci`, lint, test, build (once).
+2. Publish `dist/` to GitHub Pages.
+3. Publish the same `dist/` to Firebase Hosting.
+
+Required repository configuration:
+
+- Settings → Pages → Source: **GitHub Actions**
+- Variables: the eight `VITE_*` values plus `GA_PROPERTY_ID`
+- Secret: `FIREBASE_SERVICE_ACCOUNT`
+
+The build fails if any `%VITE_*%` or `%REACT_APP_*%` placeholder survives into `dist/`.
+
+## Admin and analytics
+
+`/admin` is not linked in the nav; the footer link is intentionally faint.
+
+1. Google sign-in via Firebase Auth.
+2. Only `VITE_ADMIN_EMAIL` may read, enforced twice: in the UI and in `firestore.rules`.
+3. Data comes from the `stats/latest` Firestore document, written by
+   `.github/workflows/sync-analytics.yml` (`npm run sync:analytics`) every day at 06:17 UTC.
+4. Trigger a refresh manually from the Actions tab → *Sync analytics* → *Run workflow*.
+
+The schedule needs a service account with GA4 **Viewer** access on the property and Firestore
+write access (default `firebase-adminsdk` account is sufficient). No Cloud Functions, no billing
+plan.
+
+Rules:
+
+```
+match /stats/{doc} {
+  allow read: if request.auth != null
+              && request.auth.token.email == 'YOUR_EMAIL';
+  allow write: if false;
+}
 ```
 
----
+## Project layout
 
-# Getting Started with Create React App
+```
+src/
+  components/   Navigation, Footer, BackButton
+  data/         static datasets (words, passages, quotes, housing index)
+  lib/          pure logic with unit tests (ticTacToe, anagram, pokerHand)
+  pages/        Home, Apps, NoPage, Admin, games/, data/
+  services/     analytics, firebase
+  test/         Vitest setup
+scripts/        sync-analytics.mjs
+public/         404 shim, favicon, manifest, robots, sitemap
+```
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Troubleshooting
 
-## Available Scripts
+| Symptom | Cause / fix |
+| --- | --- |
+| Blank page after deploy | HTML referencing assets that no longer exist. Check that both hosts got the same `dist/` |
+| Deep link 404s on Pages | `public/404.html` missing from the build, or Pages source not set to Actions |
+| Admin stuck on "Loading…" | Firebase config missing, or `onAuthStateChanged` blocked by an extension |
+| "Not authorized" after sign-in | The signed-in email differs from `VITE_ADMIN_EMAIL` (also check the Firestore rule) |
+| No analytics data | Ad blocker, `VITE_GA_MEASUREMENT_ID` missing at build, or wrong property |
+| Pages deploy skipped | Repository Pages source is still "Deploy from a branch" |
 
-In the project directory, you can run:
+## History
 
-### `npm start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Originally Create React App 5 with hash routing, two competing deploy scripts and a client-side
+admin password baked into the bundle. Migrated to Vite in this repository's history; the
+`pre-vite` tag marks the last CRA commit.
