@@ -38,8 +38,7 @@
     background-color 0.15s ease;
 }
 
-.navbar-link:hover,
-.navbar-link.active {
+.navbar-link:hover {
   color: var(--text);
   background-color: rgba(255, 255, 255, 0.08);
 }

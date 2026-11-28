@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react';
-import { Link, NavLink, useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 import resume from '../assets/Kevin_Kim_Resume.pdf';
 import BackButton from './BackButton';
@@ -58,12 +58,6 @@ const NavigationBar = () => {
         </Link>
 
         <div className="navbar-links">
-          <NavLink
-            to="/apps"
-            className={({ isActive }) => (isActive ? 'navbar-link active' : 'navbar-link')}
-          >
-            Work
-          </NavLink>
           {PROFILE_LINKS.map((link) => (
             <a
               key={link.label}
