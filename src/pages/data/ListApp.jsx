@@ -101,7 +101,7 @@ const ListApp = () => {
   return (
     <div className="container-lists">
       <div>
-        <h3>Lists</h3>
+        <h1>Lists</h1>
         <div className="list-buttons">
           {SOURCES.map((source) => (
             <button

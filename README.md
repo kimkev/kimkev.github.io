@@ -88,7 +88,7 @@ The build fails if any `%VITE_*%` or `%REACT_APP_*%` placeholder survives into `
 
 ## Admin and analytics
 
-`/admin` is not linked in the nav; the footer link is intentionally faint.
+`/admin` is not linked anywhere in the site; it is reachable only by its URL.
 
 1. Google sign-in via Firebase Auth.
 2. Only `VITE_ADMIN_EMAIL` may read, enforced twice: in the UI and in `firestore.rules`.

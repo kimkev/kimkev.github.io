@@ -51,7 +51,7 @@ const HousingChart = () => {
 
   return (
     <div className="housing-chart">
-      <h2>{data.title}</h2>
+      <h1>{data.title}</h1>
       <p className="chart-meta">
         Monthly, {first.date} to {last.date}. Base: {data.indexBase}.{' '}
         <a href={data.sourceUrl} target="_blank" rel="noreferrer">

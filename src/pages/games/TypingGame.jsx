@@ -35,15 +35,17 @@ const TypingGame = () => {
     setTyped('');
     setTimeLeft(TIME_LIMIT);
     setIsRunning(true);
-    inputRef.current?.focus();
   };
 
   const resetGame = () => {
     setTyped('');
     setTimeLeft(TIME_LIMIT);
     setIsRunning(false);
-    inputRef.current?.focus();
   };
+
+  useEffect(() => {
+    if (isRunning) inputRef.current?.focus();
+  }, [isRunning]);
 
   const elapsedSeconds = TIME_LIMIT - timeLeft;
   const wordsTyped = typed.trim() ? typed.trim().split(/\s+/).length : 0;
@@ -91,8 +93,12 @@ const TypingGame = () => {
         ref={inputRef}
         rows={2}
         value={typed}
-        onChange={(event) => setTyped(event.target.value)}
-        disabled={finished}
+        onChange={(event) => {
+          if (!isRunning) return;
+          setTyped(event.target.value.slice(0, passage.length));
+        }}
+        disabled={!isRunning}
+        placeholder={isRunning ? '' : 'Press Start to begin'}
         autoComplete="off"
         spellCheck="false"
       />
@@ -107,7 +113,7 @@ const TypingGame = () => {
 
       <div className="buttons">
         <button type="button" className="start-button" onClick={startGame}>
-          Start
+          {finished ? 'Start again' : 'Start'}
         </button>
         <button type="button" className="reset-button" onClick={resetGame}>
           Reset

@@ -7,7 +7,7 @@ const Home = () => (
     <div className="profile">
       <div className="Intro">
         <h1>Welcome</h1>
-        <p>My name is Kevin Kim, I am Web Developer based in Ontario, Canada.</p>
+        <p>My name is Kevin Kim, a web developer based in Ontario, Canada.</p>
       </div>
 
       <div className="Projects">

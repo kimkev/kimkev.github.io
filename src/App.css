@@ -39,6 +39,39 @@ h2 {
   padding: 3rem 0;
 }
 
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  padding: 0.6rem 1rem;
+  background-color: #ffffff;
+  color: #10131a;
+}
+
+.skip-link:focus {
+  left: 1rem;
+  top: 1rem;
+}
+
+main:focus {
+  outline: none;
+}
+
+.page-error {
+  width: min(560px, 90%);
+  margin: 3rem auto;
+  text-align: center;
+}
+
+.page-error-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
 button {
   font-size: 1.05rem;
   padding: 0.6rem 1.2rem;

@@ -1,92 +1,107 @@
-import { useEffect, useId, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { useEffect, useId, useRef, useState } from 'react';
+import { Link, NavLink, useLocation } from 'react-router-dom';
 
 import resume from '../assets/Kevin_Kim_Resume.pdf';
 import BackButton from './BackButton';
 import './Navigation.css';
 
+const PROFILE_LINKS = [
+  { href: 'https://github.com/kimkev', label: 'GitHub' },
+  { href: 'https://www.linkedin.com/in/kimkevi/', label: 'LinkedIn' },
+  { href: resume, label: 'Resume' },
+];
+
 const NavigationBar = () => {
-  const name = 'Kevin Kim';
-  const [dropdownVisible, setDropdownVisible] = useState(false);
-  const [isMouseHovering, setIsMouseHovering] = useState(false);
-
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+  const menuId = useId();
   const location = useLocation();
-  const isNotHomePage = location.pathname !== '/';
-  const dropdownId = useId();
-
-  const title = name.split('').map((char, index) => <span key={index}>{char}</span>);
+  const isHomePage = location.pathname === '/';
+  const showBackToApps = !isHomePage && location.pathname !== '/apps';
 
   useEffect(() => {
-    if (isMouseHovering) return undefined;
-
-    const timeoutId = setTimeout(() => setDropdownVisible(false), 1000);
-    return () => clearTimeout(timeoutId);
-  }, [isMouseHovering]);
-
-  useEffect(() => {
-    setDropdownVisible(false);
-    setIsMouseHovering(false);
+    setMenuOpen(false);
   }, [location.pathname]);
 
   useEffect(() => {
-    const onKeyDown = (event) => {
-      if (event.key === 'Escape') setDropdownVisible(false);
+    if (!menuOpen) return undefined;
+
+    const closeOnEscape = (event) => {
+      if (event.key === 'Escape') setMenuOpen(false);
+    };
+    const closeOnOutsideClick = (event) => {
+      if (!menuRef.current?.contains(event.target)) setMenuOpen(false);
     };
 
-    document.addEventListener('keydown', onKeyDown);
-    return () => document.removeEventListener('keydown', onKeyDown);
-  }, []);
+    document.addEventListener('keydown', closeOnEscape);
+    document.addEventListener('pointerdown', closeOnOutsideClick);
+
+    return () => {
+      document.removeEventListener('keydown', closeOnEscape);
+      document.removeEventListener('pointerdown', closeOnOutsideClick);
+    };
+  }, [menuOpen]);
 
   return (
     <>
-      <nav className={isNotHomePage ? 'navbar active' : 'navbar'}>
-        <Link to="/">
-          <div className="navbar-title">{title}</div>
+      <nav
+        className={isHomePage ? 'navbar' : 'navbar active'}
+        aria-label="Main"
+        onBlur={(event) => {
+          if (!event.currentTarget.contains(event.relatedTarget)) setMenuOpen(false);
+        }}
+      >
+        <Link to="/" className="navbar-title">
+          Kevin Kim
         </Link>
 
-        <div
-          className="navbar-socials"
-          onMouseEnter={() => {
-            setDropdownVisible(true);
-            setIsMouseHovering(true);
-          }}
-          onMouseLeave={() => setIsMouseHovering(false)}
-        >
+        <div className="navbar-links">
+          <NavLink
+            to="/apps"
+            className={({ isActive }) => (isActive ? 'navbar-link active' : 'navbar-link')}
+          >
+            Work
+          </NavLink>
+          {PROFILE_LINKS.map((link) => (
+            <a
+              key={link.label}
+              className="navbar-link"
+              href={link.href}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {link.label}
+            </a>
+          ))}
+        </div>
+
+        <div className="navbar-menu" ref={menuRef}>
           <button
             type="button"
-            className="navbar-socials-group"
-            aria-expanded={dropdownVisible}
-            aria-controls={dropdownId}
-            onClick={() => setDropdownVisible((visible) => !visible)}
-            onFocus={() => setDropdownVisible(true)}
+            className="navbar-menu-toggle"
+            aria-expanded={menuOpen}
+            aria-controls={menuId}
+            onClick={() => setMenuOpen((open) => !open)}
           >
-            Profile
+            Links
           </button>
 
-          {dropdownVisible && (
-            <div id={dropdownId} className="navbar-socials-dropdown">
+          {menuOpen && (
+            <div id={menuId} className="navbar-socials-dropdown">
               <ul>
-                <li>
-                  <a href="https://github.com/kimkev" target="_blank" rel="noreferrer">
-                    Github
-                  </a>
-                </li>
-                <li>
-                  <a href="https://www.linkedin.com/in/kimkevi/" target="_blank" rel="noreferrer">
-                    LinkedIn
-                  </a>
-                </li>
-                <li>
-                  <a href={resume} target="_blank" rel="noreferrer">
-                    Resume
-                  </a>
-                </li>
+                {PROFILE_LINKS.map((link) => (
+                  <li key={link.label}>
+                    <a href={link.href} target="_blank" rel="noreferrer">
+                      {link.label}
+                    </a>
+                  </li>
+                ))}
               </ul>
             </div>
           )}
         </div>
       </nav>
-      {isNotHomePage && <BackButton />}
+      {showBackToApps && <BackButton />}
     </>
   );
 };

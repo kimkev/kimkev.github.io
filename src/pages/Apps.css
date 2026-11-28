@@ -1,11 +1,17 @@
 .apps-container {
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   align-items: flex-start;
   gap: 2rem;
   width: min(900px, 92%);
   margin: 0 auto;
   padding: 0 0 4rem;
+}
+
+.apps-container h1 {
+  width: 100%;
+  margin: 0 0 1rem;
 }
 
 .col {

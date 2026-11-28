@@ -1,22 +1,12 @@
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import './BackButton.css';
 
-const BackButton = () => {
-    const navigate = useNavigate();
-    const goBack = () => {
-        navigate(-1);
-    };
-
-    return (
-        <div className='button-container'>
-            <button
-                className="back-button"
-                onClick={goBack}>
-                Back
-            </button>
-        </div>
-
-    );
-}
+const BackButton = () => (
+  <div className="button-container">
+    <Link className="back-button" to="/apps">
+      <span aria-hidden="true">←</span> All apps
+    </Link>
+  </div>
+);
 
 export default BackButton;

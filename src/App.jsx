@@ -1,6 +1,7 @@
-import { lazy, Suspense, useEffect } from 'react';
+import { lazy, Suspense, useEffect, useRef } from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
 
+import ErrorBoundary from './components/ErrorBoundary';
 import Footer from './components/Footer';
 import Navigation from './components/Navigation';
 import Apps from './pages/Apps';
@@ -28,40 +29,61 @@ const titles = {
   '/admin': 'Admin — Kevin Kim',
 };
 
-const Loading = () => <p className="page-loading">Loading…</p>;
+const pageTitleFor = (pathname) => titles[pathname] ?? 'Page not found — Kevin Kim';
+
+const Loading = () => (
+  <p className="page-loading" role="status">
+    Loading…
+  </p>
+);
 
 const App = () => {
   const location = useLocation();
-  const isHomePage = location.pathname === '/';
+  const mainRef = useRef(null);
+  const isFirstRender = useRef(true);
 
   useEffect(() => {
     trackPageview(location.pathname + location.search);
-    document.title = titles[location.pathname] ?? 'Kevin Kim';
+    document.title = pageTitleFor(location.pathname);
     window.scrollTo(0, 0);
+
+    // Move focus to the routed content so keyboard and screen reader users
+    // start at the new page instead of staying on the clicked link.
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
+    mainRef.current?.focus();
   }, [location.pathname, location.search]);
 
   return (
     <div className="main-container">
+      <a className="skip-link" href="#main-content">
+        Skip to content
+      </a>
       <div className="content">
         <Navigation />
-        <main>
-          <Suspense fallback={<Loading />}>
-            <Routes>
-              <Route index element={<Home />} />
-              <Route path="apps" element={<Apps />} />
-              <Route path="games/tic-tac-toe" element={<TicTacToe />} />
-              <Route path="games/typing" element={<TypingGame />} />
-              <Route path="games/anagram" element={<AnagramGame />} />
-              <Route path="games/mulligan" element={<CardGame />} />
-              <Route path="data/lists" element={<ListApp />} />
-              <Route path="data/chart" element={<Chart />} />
-              <Route path="admin" element={<Admin />} />
-              <Route path="*" element={<NoPage />} />
-            </Routes>
-          </Suspense>
+        <main id="main-content" ref={mainRef} tabIndex={-1}>
+          <ErrorBoundary key={location.pathname}>
+            <Suspense fallback={<Loading />}>
+              <Routes>
+                <Route index element={<Home />} />
+                <Route path="apps" element={<Apps />} />
+                <Route path="games/tic-tac-toe" element={<TicTacToe />} />
+                <Route path="games/typing" element={<TypingGame />} />
+                <Route path="games/anagram" element={<AnagramGame />} />
+                <Route path="games/mulligan" element={<CardGame />} />
+                <Route path="data/lists" element={<ListApp />} />
+                <Route path="data/chart" element={<Chart />} />
+                <Route path="admin" element={<Admin />} />
+                <Route path="*" element={<NoPage />} />
+              </Routes>
+            </Suspense>
+          </ErrorBoundary>
         </main>
       </div>
-      <Footer isHomePage={isHomePage} />
+      <Footer />
     </div>
   );
 };

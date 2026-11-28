@@ -31,6 +31,7 @@ const TicTacToe = () => {
 
   return (
     <div className="container container-tictactoe">
+      <h1>Tic-Tac-Toe</h1>
       <div className="status" role="status">
         {status}
       </div>

@@ -1,31 +1,11 @@
-:root {
-  --footer-height: 100px;
-}
-
 footer {
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  height: var(--footer-height);
   background-color: rgb(39, 42, 44);
-  padding: 20px;
+  padding: 1.5rem 1rem;
   align-items: center;
-  gap: 10px;
-}
-
-.Admin {
+  gap: 0.5rem;
+  font-size: 0.9rem;
   color: #a8a5a0;
-  font-size: 0.85rem;
-}
-
-.Admin:hover,
-.Admin:focus-visible {
-  color: #ffffff;
-}
-
-@media (max-width: 767px) {
-  footer {
-    padding: 10px;
-    font-size: 0.9rem;
-  }
 }

@@ -4,6 +4,7 @@ import './Apps.css';
 
 const Apps = () => (
   <div className="apps-container">
+    <h1>Apps</h1>
     <div className="col">
       <h2>Mini-Games</h2>
       <ul className="home-list col-A">
