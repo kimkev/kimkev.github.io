@@ -33,25 +33,25 @@ const Home = () => (
         <li className="project-card">
           <h3>
             <a
-              href="https://play.google.com/store/apps/details?id=com.kimkev.dailydew"
+              href="https://play.google.com/store/apps/developer?id=kimkev"
               target="_blank"
               rel="noreferrer"
             >
-              DailyDew
+              Android apps on Google Play
             </a>
           </h3>
           <p>
-            A calm plant-watering reminder for Android. Custom schedules, grouped notifications, and
-            an offline garden that grows as you keep your plants alive.
+            Two apps live on Google Play, designed and shipped solo. Offline-first storage and
+            in-app purchases.
           </p>
-          <p className="project-tags">Android · Offline-first · 10 languages</p>
+          <p className="project-tags">Android · Offline-first · Play Billing</p>
           <a
             className="project-link"
-            href="https://play.google.com/store/apps/details?id=com.kimkev.dailydew"
+            href="https://play.google.com/store/apps/developer?id=kimkev"
             target="_blank"
             rel="noreferrer"
           >
-            View on Google Play <span aria-hidden="true">→</span>
+            Browse on Google Play <span aria-hidden="true">→</span>
           </a>
         </li>
 
