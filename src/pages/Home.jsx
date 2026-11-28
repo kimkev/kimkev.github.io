@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
 
-import resume from '../assets/Kevin_Kim_Resume.pdf';
 import './Home.css';
 
 const Home = () => (
@@ -12,17 +11,6 @@ const Home = () => (
         I build fast, accessible interfaces for the web. This site collects the small apps and games
         I&apos;ve built to practice state, timing, and data handling.
       </p>
-      <div className="hero-actions">
-        <Link className="button-primary" to="/apps">
-          See my work
-        </Link>
-        <a className="button-secondary" href={resume} target="_blank" rel="noreferrer">
-          Resume (PDF)
-        </a>
-        <a className="hero-email" href="mailto:k6yk07@gmail.com">
-          k6yk07@gmail.com
-        </a>
-      </div>
     </section>
 
     <section className="projects" aria-labelledby="projects-heading">
@@ -78,7 +66,12 @@ const Home = () => (
             and a racing capstone.
           </p>
           <p className="project-tags">Unity · C# · WebGL</p>
-          <a className="project-link" href="https://kimkev.itch.io/" target="_blank" rel="noreferrer">
+          <a
+            className="project-link"
+            href="https://kimkev.itch.io/"
+            target="_blank"
+            rel="noreferrer"
+          >
             Play on itch.io <span aria-hidden="true">→</span>
           </a>
         </li>

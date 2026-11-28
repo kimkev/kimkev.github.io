@@ -11,6 +11,8 @@ const PROFILE_LINKS = [
   { href: resume, label: 'Resume' },
 ];
 
+const EMAIL = 'k6ky08@gmail.com';
+
 const NavigationBar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
@@ -73,6 +75,9 @@ const NavigationBar = () => {
               {link.label}
             </a>
           ))}
+          <a className="navbar-link navbar-email" href={`mailto:${EMAIL}`}>
+            {EMAIL}
+          </a>
         </div>
 
         <div className="navbar-menu" ref={menuRef}>
@@ -96,6 +101,9 @@ const NavigationBar = () => {
                     </a>
                   </li>
                 ))}
+                <li>
+                  <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
+                </li>
               </ul>
             </div>
           )}

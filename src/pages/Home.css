@@ -31,59 +31,6 @@
   color: var(--text-soft);
 }
 
-.hero-actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.75rem;
-  margin-top: 2rem;
-}
-
-.button-primary,
-.button-secondary {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.7rem 1.25rem;
-  border-radius: var(--radius);
-  font-weight: 600;
-  transition:
-    background-color 0.15s ease,
-    border-color 0.15s ease,
-    color 0.15s ease;
-}
-
-.hero-actions .button-primary {
-  background-color: var(--text);
-  color: var(--accent-contrast);
-}
-
-.hero-actions .button-primary:hover {
-  background-color: #ffffff;
-  color: var(--accent-contrast);
-}
-
-.hero-actions .button-secondary {
-  border: 1px solid var(--border-strong);
-  color: var(--text);
-}
-
-.hero-actions .button-secondary:hover {
-  border-color: var(--text);
-  color: var(--text);
-}
-
-.hero-email {
-  margin-left: 0.5rem;
-  font-size: 0.95rem;
-  color: var(--text-muted);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-.hero-email:hover {
-  color: var(--text);
-}
-
 .projects {
   margin-top: 4rem;
 }
@@ -147,9 +94,5 @@
   .home-container {
     width: 92%;
     padding-top: 1rem;
-  }
-
-  .hero-email {
-    margin-left: 0;
   }
 }
