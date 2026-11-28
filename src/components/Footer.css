@@ -2,10 +2,10 @@ footer {
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  background-color: rgb(39, 42, 44);
+  background-color: var(--surface-raised);
   padding: 1.5rem 1rem;
   align-items: center;
   gap: 0.5rem;
   font-size: 0.9rem;
-  color: #a8a5a0;
+  color: var(--text-muted);
 }

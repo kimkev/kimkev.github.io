@@ -3,8 +3,8 @@ html {
   min-height: 100%;
   margin: 0;
   padding: 0;
-  background-color: #181a1b;
-  color: #e8e6e3;
+  background-color: var(--bg);
+  color: var(--text);
 }
 
 h1 {
@@ -35,7 +35,7 @@ h2 {
 
 .page-loading {
   text-align: center;
-  color: #a8a5a0;
+  color: var(--text-muted);
   padding: 3rem 0;
 }
 
@@ -45,8 +45,8 @@ h2 {
   top: 0;
   z-index: 100;
   padding: 0.6rem 1rem;
-  background-color: #ffffff;
-  color: #10131a;
+  background-color: var(--text);
+  color: var(--accent-contrast);
 }
 
 .skip-link:focus {
@@ -73,22 +73,26 @@ main:focus {
 }
 
 button {
-  font-size: 1.05rem;
-  padding: 0.6rem 1.2rem;
-  color: #10131a;
-  background-color: #c7c7c7;
-  border: none;
-  border-radius: 5px;
+  font-size: 1rem;
+  padding: 0.55rem 1rem;
+  color: var(--text);
+  background-color: var(--surface-raised);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
   cursor: pointer;
-  transition: background-color 0.15s ease-in-out;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
 }
 
 button:hover:not(:disabled) {
-  background-color: #9fd4ea;
+  background-color: var(--surface-hover);
+  border-color: var(--text-muted);
 }
 
 button:disabled {
-  opacity: 0.6;
+  opacity: 0.55;
   cursor: default;
 }
 
@@ -103,12 +107,20 @@ a:visited {
 }
 
 a:hover {
-  color: #b795ff;
+  color: var(--accent);
 }
 
 .input {
   font-size: 1.25rem;
   padding: 0.75rem;
+  color: var(--text);
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+::placeholder {
+  color: var(--text-dim);
 }
 
 @media (max-width: 600px) {

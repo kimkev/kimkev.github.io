@@ -29,12 +29,12 @@
 }
 
 .admin-muted {
-  color: #a8a5a0;
+  color: var(--text-muted);
   font-size: 0.9rem;
 }
 
 .admin-error {
-  color: #ff8a80;
+  color: var(--danger);
 }
 
 .admin-metrics {
@@ -47,7 +47,7 @@
 .admin-metrics div {
   flex: 1 1 140px;
   padding: 1rem;
-  border: 1px solid #3a3d3f;
+  border: 1px solid var(--border);
   border-radius: 6px;
 }
 
@@ -55,7 +55,7 @@
   font-size: 0.85rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #a8a5a0;
+  color: var(--text-muted);
 }
 
 .admin-metrics dd {
@@ -73,7 +73,7 @@
 .admin-table td {
   padding: 0.5rem;
   text-align: left;
-  border-bottom: 1px solid #3a3d3f;
+  border-bottom: 1px solid var(--border);
 }
 
 .admin-table th:last-child,

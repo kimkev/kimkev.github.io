@@ -24,29 +24,29 @@
   padding: 0.4rem 0.9rem;
   font-size: 0.9rem;
   background-color: transparent;
-  border: 1px solid #4a4e51;
-  color: #d6d3cd;
+  border: 1px solid var(--border-strong);
+  color: var(--text-soft);
 }
 
 .difficulty-buttons button:hover:not(:disabled) {
-  border-color: #e8e6e3;
-  color: #ffffff;
+  border-color: var(--text);
+  color: var(--text);
 }
 
 .difficulty-buttons button[aria-pressed='true'] {
-  background-color: #82b1ff;
-  border-color: #82b1ff;
-  color: #10131a;
+  background-color: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-contrast);
 }
 
 .difficulty-buttons button[aria-pressed='true']:hover:not(:disabled) {
-  color: #10131a;
+  color: var(--accent-contrast);
 }
 
 .anagram-stats {
   margin: 0;
   font-size: 0.9rem;
-  color: #a8a5a0;
+  color: var(--text-muted);
 }
 
 .scrambled-word {
@@ -90,11 +90,11 @@
 }
 
 .anagram-correct {
-  color: #6ee7a0;
+  color: var(--success);
 }
 
 .anagram-incorrect {
-  color: #ff8a80;
+  color: var(--danger);
 }
 
 @media (max-width: 480px) {

@@ -8,9 +8,9 @@
   gap: 0.4rem;
   padding: 0.35rem 0;
   font-size: 0.95rem;
-  color: #a8a5a0;
+  color: var(--text-muted);
 }
 
 .back-button:hover {
-  color: #ffffff;
+  color: var(--text);
 }

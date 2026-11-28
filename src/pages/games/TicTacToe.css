@@ -15,7 +15,7 @@
 .scoreboard div {
   min-width: 72px;
   padding: 0.5rem 0.75rem;
-  border: 1px solid #3a3d3f;
+  border: 1px solid var(--border);
   border-radius: 8px;
   text-align: center;
 }
@@ -24,7 +24,7 @@
   font-size: 0.7rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #a8a5a0;
+  color: var(--text-muted);
 }
 
 .scoreboard dd {
@@ -36,7 +36,7 @@
 .status {
   margin: 0;
   font-size: 1.1rem;
-  color: #e8e6e3;
+  color: var(--text);
 }
 
 .board {
@@ -53,7 +53,7 @@
 .square {
   width: 100px;
   height: 100px;
-  border: 1px solid #e8e6e3;
+  border: 1px solid var(--text);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -77,12 +77,12 @@
 }
 
 .square:focus-visible {
-  outline: 2px solid #82b1ff;
+  outline: 2px solid var(--accent);
   outline-offset: -2px;
 }
 
 .winning {
-  background-color: rgba(0, 193, 80, 0.35);
+  background-color: rgba(110, 231, 160, 0.22);
 }
 
 .board-actions {
@@ -94,13 +94,13 @@
 
 .button-quiet {
   background-color: transparent;
-  border: 1px solid #4a4e51;
-  color: #d6d3cd;
+  border: 1px solid var(--border-strong);
+  color: var(--text-soft);
 }
 
 .button-quiet:hover:not(:disabled) {
   background-color: rgba(255, 255, 255, 0.08);
-  color: #ffffff;
+  color: var(--text);
 }
 
 @media (max-width: 480px) {

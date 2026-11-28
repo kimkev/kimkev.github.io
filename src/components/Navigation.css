@@ -13,12 +13,12 @@
   font-size: clamp(1.3rem, 3.5vw, 1.7rem);
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #ffffff;
+  color: var(--text);
   white-space: nowrap;
 }
 
 .navbar-title:hover {
-  color: #ffffff;
+  color: var(--text);
 }
 
 .navbar-links {
@@ -31,8 +31,8 @@
 .navbar-link {
   padding: 0.5rem 0.75rem;
   font-size: 0.95rem;
-  color: #d6d3cd;
-  border-radius: 4px;
+  color: var(--text-soft);
+  border-radius: var(--radius-sm);
   transition:
     color 0.15s ease,
     background-color 0.15s ease;
@@ -40,7 +40,7 @@
 
 .navbar-link:hover,
 .navbar-link.active {
-  color: #ffffff;
+  color: var(--text);
   background-color: rgba(255, 255, 255, 0.08);
 }
 
@@ -51,15 +51,16 @@
 
 .navbar-menu-toggle {
   background-color: transparent;
-  border: 1px solid #6b6f72;
-  border-radius: 4px;
-  color: #ffffff;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  color: var(--text);
   padding: 0.45rem 0.9rem;
   font-size: 0.95rem;
 }
 
 .navbar-menu-toggle:hover:not(:disabled) {
   background-color: rgba(255, 255, 255, 0.12);
+  border-color: var(--text-muted);
 }
 
 .navbar-socials-dropdown {
@@ -67,9 +68,9 @@
   top: calc(100% + 0.5rem);
   right: 0;
   min-width: 160px;
-  background-color: #232628;
-  border: 1px solid #3a3d3f;
-  border-radius: 6px;
+  background-color: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
   padding: 0.25rem 0;
   z-index: 10;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
@@ -89,13 +90,13 @@
   display: block;
   padding: 0.55rem 1rem;
   font-size: 1rem;
-  color: #e8e6e3;
+  color: var(--text);
 }
 
 .navbar-socials-dropdown a:hover,
 .navbar-socials-dropdown a:focus-visible {
   background-color: rgba(255, 255, 255, 0.08);
-  color: #ffffff;
+  color: var(--text);
 }
 
 @media (max-width: 720px) {

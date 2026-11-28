@@ -1,6 +1,6 @@
 .container-cardgame {
   flex-direction: column;
-  width: min(960px, 92%);
+  width: min(var(--page-width), 92%);
   margin: 0 auto;
   padding: 0.5rem 0 3rem;
 }
@@ -8,13 +8,13 @@
 .instructions-message {
   margin: 0.5rem 0;
   text-align: center;
-  color: #d6d3cd;
+  color: var(--text-soft);
 }
 
 .card-error {
   margin: 0.5rem 0;
   text-align: center;
-  color: #ff8a80;
+  color: var(--danger);
 }
 
 .card-error p {
@@ -25,14 +25,14 @@
   width: min(560px, 100%);
   margin: 0.5rem auto 1.5rem;
   padding: 0.75rem 1rem;
-  border: 1px solid #3a3d3f;
+  border: 1px solid var(--border);
   border-radius: 8px;
-  color: #c9c6c0;
+  color: var(--text-soft);
 }
 
 .card-rules summary {
   cursor: pointer;
-  color: #e8e6e3;
+  color: var(--text);
 }
 
 .card-rules ul {
@@ -61,10 +61,10 @@
 .deck {
   width: 80px;
   height: 120px;
-  border: 1px solid #333;
+  border: 1px solid var(--accent);
   border-radius: 8px;
-  background-color: #4e00cb;
-  color: #ffffff;
+  background-color: #2f4157;
+  color: var(--text);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -74,7 +74,7 @@
 .deck-label {
   margin: 0;
   font-size: 0.8rem;
-  color: #a8a5a0;
+  color: var(--text-muted);
 }
 
 .hand-container {
@@ -102,9 +102,9 @@
 .card {
   width: 80px;
   height: 120px;
-  border: 1px solid #333;
+  border: 1px solid var(--border);
   border-radius: 8px;
-  background-color: #ffffff;
+  background-color: var(--text);
   margin: 5px;
   display: flex;
   justify-content: center;
@@ -127,7 +127,7 @@
 .card.user-card {
   padding: 0;
   cursor: pointer;
-  background-color: #ffffff;
+  background-color: var(--text);
 }
 
 .card.user-card:disabled {
@@ -142,7 +142,7 @@
 
 .hand-name {
   margin: 0.25rem 0 0;
-  color: #a8a5a0;
+  color: var(--text-muted);
 }
 
 .card-actions {
@@ -155,13 +155,13 @@
 
 .button-quiet {
   background-color: transparent;
-  border: 1px solid #4a4e51;
-  color: #d6d3cd;
+  border: 1px solid var(--border-strong);
+  color: var(--text-soft);
 }
 
 .button-quiet:hover:not(:disabled) {
   background-color: rgba(255, 255, 255, 0.08);
-  color: #ffffff;
+  color: var(--text);
 }
 
 @media (max-width: 768px) {

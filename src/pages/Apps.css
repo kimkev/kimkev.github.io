@@ -1,5 +1,5 @@
 .apps-container {
-  width: min(960px, 92%);
+  width: min(var(--page-width), 92%);
   margin: 0 auto;
   padding: 1rem 0 4rem;
 }
@@ -18,7 +18,7 @@
   margin: 0;
   font-size: 1.05rem;
   line-height: 1.7;
-  color: #c9c6c0;
+  color: var(--text-soft);
 }
 
 .apps-group + .apps-group {
@@ -28,7 +28,7 @@
 .apps-group h2 {
   margin: 0 0 1rem;
   padding-bottom: 0.5rem;
-  border-bottom: 1px solid #2f3234;
+  border-bottom: 1px solid var(--border);
   font-size: 1.35rem;
 }
 
@@ -47,8 +47,8 @@
   gap: 0.6rem;
   height: 100%;
   padding: 1.15rem;
-  border: 1px solid #3a3d3f;
-  border-radius: 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
   transition:
     border-color 0.2s ease,
     background-color 0.2s ease;
@@ -56,33 +56,33 @@
 
 .app-card:hover,
 .app-card:focus-visible {
-  border-color: #82b1ff;
-  background-color: rgba(130, 177, 255, 0.06);
+  border-color: var(--accent);
+  background-color: var(--accent-soft);
 }
 
 .app-card h3 {
   margin: 0;
   font-size: 1.15rem;
-  color: #ffffff;
+  color: var(--text);
 }
 
 .app-card p {
   margin: 0;
   font-size: 0.95rem;
   line-height: 1.6;
-  color: #c9c6c0;
+  color: var(--text-soft);
 }
 
 .app-tags {
   font-size: 0.78rem;
-  color: #9a9791;
+  color: var(--text-dim);
 }
 
 .app-card-link {
   margin-top: auto;
   padding-top: 0.25rem;
   font-size: 0.9rem;
-  color: #cfd8e3;
+  color: var(--accent);
 }
 
 @media (max-width: 600px) {

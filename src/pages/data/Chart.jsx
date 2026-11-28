@@ -48,7 +48,14 @@ const options = {
   interaction: { mode: 'index', intersect: false },
   plugins: { legend: { display: false } },
   scales: {
-    x: { ticks: { maxTicksLimit: 8 } },
+    x: {
+      ticks: {
+        maxTicksLimit: 8,
+        callback(value) {
+          return this.getLabelForValue(value).slice(0, 4);
+        },
+      },
+    },
     y: { title: { display: true, text: 'Index (Dec 2016 = 100)' } },
   },
 };
@@ -61,7 +68,7 @@ const HousingChart = () => {
         {
           label: 'New housing price index',
           data: data.series.map((point) => point.value),
-          borderColor: 'rgba(75, 192, 192, 1)',
+          borderColor: '#82b1ff',
           borderWidth: 2,
           pointRadius: 0,
           pointHitRadius: 12,
