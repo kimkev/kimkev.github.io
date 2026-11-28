@@ -37,7 +37,7 @@ const Home = () => (
               target="_blank"
               rel="noreferrer"
             >
-              Flutter apps on Google Play
+              Android apps on Google Play
             </a>
           </h3>
           <p>
