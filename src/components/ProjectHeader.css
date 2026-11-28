@@ -1,0 +1,45 @@
+.project-header {
+  width: 100%;
+  max-width: 68ch;
+  margin: 0 auto 1.75rem;
+  text-align: center;
+}
+
+.project-header h1 {
+  margin: 0 0 0.6rem;
+  font-size: clamp(1.8rem, 4vw, 2.4rem);
+}
+
+.project-header-description {
+  margin: 0 auto 1rem;
+  line-height: 1.6;
+  color: #c9c6c0;
+}
+
+.project-header-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem 0.75rem;
+  margin: 0;
+  font-size: 0.85rem;
+  color: #a8a5a0;
+}
+
+.tag {
+  padding: 0.2rem 0.6rem;
+  border: 1px solid #3a3d3f;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.project-source {
+  color: #cfd8e3;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.project-source:hover {
+  color: #ffffff;
+}

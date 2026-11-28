@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 
+import ProjectHeader from '../../components/ProjectHeader';
 import { compareHands, describeHand, evaluateHand } from '../../lib/pokerHand';
 import './CardGame.css';
 
@@ -130,7 +131,12 @@ const CardGame = () => {
 
   return (
     <div className="container container-cardgame">
-      <h1>Mulligan</h1>
+      <ProjectHeader
+        title="Mulligan"
+        description="Five-card poker against the computer. Select any cards, then mulligan once to replace them and compare hands."
+        tags={['REST API', 'Async']}
+        source="https://github.com/kimkev/kimkev.github.io/blob/master/src/pages/games/CardGame.jsx"
+      />
 
       <div className="instructions-container">
         <p className="instructions-message">{status}</p>

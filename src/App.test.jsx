@@ -25,7 +25,7 @@ describe('App routes', () => {
   it('renders the home page', async () => {
     renderAt('/');
 
-    expect(await screen.findByRole('heading', { name: /welcome/i })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'Kevin Kim' })).toBeInTheDocument();
     expect(consoleError).not.toHaveBeenCalled();
   });
 

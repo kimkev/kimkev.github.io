@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { DIFFICULTIES, WORDS_BY_LENGTH } from '../../data/words';
+import ProjectHeader from '../../components/ProjectHeader';
 import { isCorrectGuess, pickWord, revealNextLetter, scrambleWord } from '../../lib/anagram';
 import './AnagramGame.css';
 
@@ -51,7 +52,12 @@ const AnagramGame = () => {
 
   return (
     <div className="container container-anagram">
-      <h1>Guess the Word!</h1>
+      <ProjectHeader
+        title="Anagram"
+        description="Unscramble the word below. Hints fill in the next letter, and you can change difficulty at any time."
+        tags={['Hooks', 'Unit-tested logic']}
+        source="https://github.com/kimkev/kimkev.github.io/blob/master/src/pages/games/AnagramGame.jsx"
+      />
 
       <div className="difficulty-buttons">
         {Object.keys(DIFFICULTIES).map((level) => (
@@ -67,7 +73,6 @@ const AnagramGame = () => {
         ))}
       </div>
 
-      <p>Unscramble the word below:</p>
       <p className="scrambled-word">{scrambledWord}</p>
 
       <form className="container-input" onSubmit={handleSubmit}>

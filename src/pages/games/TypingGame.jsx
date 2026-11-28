@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 import { PASSAGES } from '../../data/passages';
+import ProjectHeader from '../../components/ProjectHeader';
 import './TypingGame.css';
 
 const TIME_LIMIT = 30;
@@ -60,11 +61,12 @@ const TypingGame = () => {
 
   return (
     <div className="container container-typinggame">
-      <h1>Typing Test</h1>
-
-      <p className="typing-instructions">
-        Type the passage below. You have {TIME_LIMIT} seconds.
-      </p>
+      <ProjectHeader
+        title="Typing test"
+        description={`Type the passage below. You have ${TIME_LIMIT} seconds — speed and accuracy update live.`}
+        tags={['Timers', 'Refs']}
+        source="https://github.com/kimkev/kimkev.github.io/blob/master/src/pages/games/TypingGame.jsx"
+      />
 
       <div className="randomText" aria-hidden="true">
         {passage.split('').map((character, index) => {

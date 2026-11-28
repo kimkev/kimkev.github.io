@@ -12,6 +12,7 @@ import {
 } from 'chart.js';
 
 import data from '../../data/housing-index.json';
+import ProjectHeader from '../../components/ProjectHeader';
 import './Chart.css';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
@@ -51,7 +52,12 @@ const HousingChart = () => {
 
   return (
     <div className="housing-chart">
-      <h1>{data.title}</h1>
+      <ProjectHeader
+        title={data.title}
+        description="Monthly new housing price index for Canada, charted from Statistics Canada data with a table fallback."
+        tags={['Chart.js', 'Statistics Canada']}
+        source="https://github.com/kimkev/kimkev.github.io/blob/master/src/pages/data/Chart.jsx"
+      />
       <p className="chart-meta">
         Monthly, {first.date} to {last.date}. Base: {data.indexBase}.{' '}
         <a href={data.sourceUrl} target="_blank" rel="noreferrer">

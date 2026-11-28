@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import ProjectHeader from '../../components/ProjectHeader';
 import { createBoard, getWinner, isDraw, otherPlayer } from '../../lib/ticTacToe';
 import './TicTacToe.css';
 
@@ -31,7 +32,12 @@ const TicTacToe = () => {
 
   return (
     <div className="container container-tictactoe">
-      <h1>Tic-Tac-Toe</h1>
+      <ProjectHeader
+        title="Tic-Tac-Toe"
+        description="Two players share the keyboard. Take turns until someone lines up three in a row."
+        tags={['React state', 'Two-player']}
+        source="https://github.com/kimkev/kimkev.github.io/blob/master/src/pages/games/TicTacToe.jsx"
+      />
       <div className="status" role="status">
         {status}
       </div>
