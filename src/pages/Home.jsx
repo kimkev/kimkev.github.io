@@ -37,14 +37,14 @@ const Home = () => (
               target="_blank"
               rel="noreferrer"
             >
-              Android apps on Google Play
+              Flutter apps on Google Play
             </a>
           </h3>
           <p>
             Two apps live on Google Play, designed and shipped solo. Offline-first storage and
             in-app purchases.
           </p>
-          <p className="project-tags">Android · Offline-first · Play Billing</p>
+          <p className="project-tags">Flutter · Offline-first · Play Billing</p>
           <a
             className="project-link"
             href="https://play.google.com/store/apps/developer?id=kimkev"
