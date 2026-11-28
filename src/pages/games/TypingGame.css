@@ -1,54 +1,60 @@
 .container-typinggame {
-    flex-direction: column;
-    align-items: center;
-    border: 1px solid transparent;
-    border-style: dashed dashed none dashed;
-    border-radius: 25px;
-    box-shadow: 0px 0px 75px 0px rgba(200, 80, 0, 0.75);
-  }
+  flex-direction: column;
+  align-items: center;
+  width: min(820px, 92%);
+  margin: 0 auto;
+  padding: 0.5rem 0 3rem;
+}
+
+.typing-durations {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.typing-durations button {
+  padding: 0.4rem 0.9rem;
+  font-size: 0.9rem;
+  background-color: transparent;
+  border: 1px solid #4a4e51;
+  color: #d6d3cd;
+}
+
+.typing-durations button[aria-pressed='true'] {
+  background-color: #82b1ff;
+  border-color: #82b1ff;
+  color: #10131a;
+}
+
+.typing-durations button:hover:not(:disabled) {
+  border-color: #e8e6e3;
+  color: #ffffff;
+}
+
+.typing-durations button[aria-pressed='true']:hover:not(:disabled) {
+  color: #10131a;
+}
 
 .randomText {
-    font-size: 2rem;
-    margin: 0 0 1rem 0;
-    height: 15rem;
-    overflow: auto;
-    text-align: center;
-}
-
-.timer {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-}
-
-.buttons {
-    display: flex;
-    justify-content: center;
-}
-
-.start {
-    padding: 1rem 2rem;
-    background-color: lightgreen;
-    border: none;
-    border-radius: 5px;
-    font-size: 1.5rem;
-    margin-right: 1rem;
-}
-
-.reset {
-    padding: 1rem 2rem;
-    background-color: lightcoral;
-    border: none;
-    border-radius: 5px;
-    font-size: 1.5rem;
+  width: 100%;
+  max-height: 14rem;
+  margin: 0 0 1.25rem;
+  padding: 0.5rem;
+  overflow-y: auto;
+  font-size: clamp(1.15rem, 2.6vw, 1.6rem);
+  line-height: 1.65;
+  text-align: left;
+  overflow-wrap: anywhere;
 }
 
 .correct {
-    color: rgb(97, 255, 97);
+  color: rgb(97, 255, 97);
 }
 
 .incorrect {
-    color: rgb(255, 51, 51);
+  color: rgb(255, 51, 51);
 }
+
 .pending {
   color: #8c8a86;
 }
@@ -57,8 +63,20 @@
   border-bottom: 2px solid #82b1ff;
 }
 
-.typing-instructions {
+.container-typinggame textarea.input {
+  width: 100%;
+  font-family: inherit;
+  font-size: 1.05rem;
+  color: inherit;
+  background-color: #1f2224;
+  border: 1px solid #3a3d3f;
+  border-radius: 6px;
+  resize: vertical;
+}
+
+.container-typinggame textarea.input:disabled {
   color: #a8a5a0;
+  background-color: #1a1c1e;
 }
 
 .typing-stats {
@@ -67,27 +85,56 @@
   justify-content: center;
   gap: 1.5rem;
   margin: 1rem 0;
-  font-size: 1.1rem;
+  font-size: 1.05rem;
 }
 
-.typing-result {
+.typing-result-card {
+  width: 100%;
+  margin: 1.25rem 0;
+  padding: 1.25rem;
+  border: 1px solid #3a3d3f;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.typing-result-card h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.3rem;
+}
+
+.typing-result-score {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 600;
   color: #6ee7a0;
 }
 
-.container-typinggame textarea.input {
-  width: min(720px, 90%);
-  font-family: inherit;
-  font-size: 1.1rem;
-  color: inherit;
-  background-color: #1f2224;
-  border: 1px solid #3a3d3f;
-  border-radius: 6px;
-  resize: vertical;
+.typing-result-detail {
+  margin: 0.5rem 0 0;
+  color: #a8a5a0;
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.button-quiet {
+  background-color: transparent;
+  border: 1px solid #4a4e51;
+  color: #d6d3cd;
+}
+
+.button-quiet:hover:not(:disabled) {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
 }
 
 @media (max-width: 600px) {
   .randomText {
-    font-size: 1.35rem;
-    height: 12rem;
+    max-height: 12rem;
+    font-size: 1.15rem;
   }
 }

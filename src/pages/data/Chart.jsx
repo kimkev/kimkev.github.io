@@ -11,11 +11,36 @@ import {
   Tooltip,
 } from 'chart.js';
 
-import data from '../../data/housing-index.json';
 import ProjectHeader from '../../components/ProjectHeader';
+import data from '../../data/housing-index.json';
 import './Chart.css';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+
+const MONTH_NAMES = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+];
+
+const formatMonth = (value) => {
+  const [year, month] = value.split('-');
+  return `${MONTH_NAMES[Number(month) - 1]} ${year}`;
+};
+
+const formatDate = (value) => {
+  const [year, month, day] = value.split('-');
+  return `${MONTH_NAMES[Number(month) - 1]} ${Number(day)}, ${year}`;
+};
 
 const options = {
   responsive: true,
@@ -49,6 +74,12 @@ const HousingChart = () => {
 
   const first = data.series[0];
   const last = data.series[data.series.length - 1];
+  const changePercent = ((last.value - first.value) / first.value) * 100;
+  const direction = changePercent >= 0 ? 'rose' : 'fell';
+  const summary = `The index ${direction} ${Math.abs(changePercent).toFixed(1)}% between ${formatMonth(
+    first.date,
+  )} and ${formatMonth(last.date)}, from ${first.value} to ${last.value}.`;
+  const base = data.indexBase.split('=')[0];
 
   return (
     <div className="housing-chart">
@@ -58,17 +89,22 @@ const HousingChart = () => {
         tags={['Chart.js', 'Statistics Canada']}
         source="https://github.com/kimkev/kimkev.github.io/blob/master/src/pages/data/Chart.jsx"
       />
+
+      <p className="chart-summary">{summary}</p>
       <p className="chart-meta">
-        Monthly, {first.date} to {last.date}. Base: {data.indexBase}.{' '}
+        Monthly, {formatMonth(first.date)} to {formatMonth(last.date)}. Base:{' '}
+        {formatMonth(`${base.slice(0, 4)}-${base.slice(4, 6)}`)} = 100. Source:{' '}
         <a href={data.sourceUrl} target="_blank" rel="noreferrer">
-          Source: {data.source}
+          {data.source}
         </a>
         .
       </p>
 
-      <div className="chart-canvas">
+      <div className="chart-canvas" role="img" aria-label={summary}>
         <Line data={chartData} options={options} />
       </div>
+
+      <p className="chart-updated">Data updated {formatDate(data.generatedAt)}.</p>
 
       <details className="chart-table">
         <summary>View data table</summary>

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 
 import ProjectHeader from '../../components/ProjectHeader';
 import { QUOTES } from '../../data/quotes';
@@ -67,35 +67,55 @@ const ListApp = () => {
   const [columns, setColumns] = useState([]);
   const [title, setTitle] = useState('');
   const [sortKey, setSortKey] = useState('');
+  const [sortAscending, setSortAscending] = useState(true);
   const [status, setStatus] = useState('idle');
   const [error, setError] = useState('');
+  const [activeSource, setActiveSource] = useState(null);
+  const requestId = useRef(0);
   const currentYear = new Date().getFullYear();
 
   const sortedRows = useMemo(() => {
     if (!sortKey) return rows;
-    return [...rows].sort((first, second) => compareValues(first[sortKey], second[sortKey]));
-  }, [rows, sortKey]);
+
+    const sorted = [...rows].sort((first, second) =>
+      compareValues(first[sortKey], second[sortKey]),
+    );
+
+    return sortAscending ? sorted : sorted.reverse();
+  }, [rows, sortKey, sortAscending]);
 
   const handleLoad = async (source) => {
+    const request = requestId.current + 1;
+    requestId.current = request;
+
+    setActiveSource(source);
     setStatus('loading');
     setError('');
     setSortKey('');
+    setSortAscending(true);
 
     try {
       const loaded = await source.load(currentYear);
+      if (request !== requestId.current) return;
+
       const nextRows = Array.isArray(loaded) ? loaded : [];
+      const nextColumns = nextRows.length
+        ? [...new Set(nextRows.flatMap((row) => Object.keys(row)))]
+        : [];
 
       setRows(nextRows);
-      setColumns(nextRows.length ? Object.keys(nextRows[0]) : []);
+      setColumns(nextColumns);
       setTitle(source.title(currentYear));
 
       if (!nextRows.length) setError('The source returned no rows.');
     } catch (loadError) {
+      if (request !== requestId.current) return;
+
       setRows([]);
       setColumns([]);
       setError(loadError.message);
     } finally {
-      setStatus('idle');
+      if (request === requestId.current) setStatus('idle');
     }
   };
 
@@ -107,8 +127,9 @@ const ListApp = () => {
         tags={['Fetch', 'Sorting']}
         source="https://github.com/kimkev/kimkev.github.io/blob/master/src/pages/data/ListApp.jsx"
       />
-      <div>
-        <h2>Sources</h2>
+
+      <section className="lists-controls" aria-labelledby="sources-heading">
+        <h2 id="sources-heading">Sources</h2>
         <div className="list-buttons">
           {SOURCES.map((source) => (
             <button
@@ -116,23 +137,35 @@ const ListApp = () => {
               type="button"
               onClick={() => handleLoad(source)}
               disabled={status === 'loading'}
+              aria-pressed={activeSource?.id === source.id}
             >
               {source.id === 'holidays' ? `${currentYear} ${source.label}` : source.label}
             </button>
           ))}
         </div>
-        {status === 'loading' && <p className="list-status">Loading…</p>}
-        {error && (
-          <p className="list-status list-error" role="alert">
-            {error}
+
+        {status === 'loading' && (
+          <p className="list-status" role="status">
+            Loading…
           </p>
         )}
-      </div>
 
-      <div>
+        {error && (
+          <div className="list-status list-error" role="alert">
+            <p>{error}</p>
+            {activeSource && (
+              <button type="button" onClick={() => handleLoad(activeSource)} disabled={status === 'loading'}>
+                Try again
+              </button>
+            )}
+          </div>
+        )}
+      </section>
+
+      <section className="lists-results" aria-label="Results">
         <div className="container-sort">
-          <h2>{title}</h2>
-          <div>
+          <h2>{title || 'Results'}</h2>
+          <div className="sort-controls">
             <label htmlFor="sort-column">Sort by</label>
             <select
               id="sort-column"
@@ -148,11 +181,31 @@ const ListApp = () => {
                 </option>
               ))}
             </select>
+            <button
+              type="button"
+              className="sort-direction"
+              onClick={() => setSortAscending((current) => !current)}
+              disabled={!sortKey}
+              aria-label={`Sort ${sortAscending ? 'descending' : 'ascending'}`}
+            >
+              {sortAscending ? 'Asc ↑' : 'Desc ↓'}
+            </button>
           </div>
         </div>
 
-        <DataTable rows={sortedRows} columns={columns} />
-      </div>
+        {rows.length > 0 && (
+          <p className="list-count">
+            {rows.length} {rows.length === 1 ? 'row' : 'rows'}
+          </p>
+        )}
+
+        <DataTable
+          rows={sortedRows}
+          columns={columns}
+          caption={title}
+          emptyMessage={title ? 'No rows returned.' : 'Pick a source above to load data.'}
+        />
+      </section>
     </div>
   );
 };

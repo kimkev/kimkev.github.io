@@ -1,97 +1,138 @@
 .container-cardgame {
-    width: 80%;
-    flex-direction: column;
-    align-items: normal;
-    max-height: 100vh;
+  flex-direction: column;
+  width: min(960px, 92%);
+  margin: 0 auto;
+  padding: 0.5rem 0 3rem;
+}
+
+.instructions-message {
+  margin: 0.5rem 0;
+  text-align: center;
+  color: #d6d3cd;
+}
+
+.card-error {
+  margin: 0.5rem 0;
+  text-align: center;
+  color: #ff8a80;
+}
+
+.card-error p {
+  margin: 0 0 0.5rem;
+}
+
+.card-rules {
+  width: min(560px, 100%);
+  margin: 0.5rem auto 1.5rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid #3a3d3f;
+  border-radius: 8px;
+  color: #c9c6c0;
+}
+
+.card-rules summary {
+  cursor: pointer;
+  color: #e8e6e3;
+}
+
+.card-rules ul {
+  margin: 0.5rem 0 0;
+  padding-left: 1.25rem;
+}
+
+.card-rules li {
+  margin: 0.3rem 0;
 }
 
 .card-game-container {
-    display: flex;
-    justify-content: space-around;
-    align-items: flex-start;
-    padding: 20px;
-}
-
-.instructions-container {
-    text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 2rem;
 }
 
 .left-section {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    /* Vertically center the content */
-    max-width: 20%;
-    /* Adjust the width as needed */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.deck {
+  width: 80px;
+  height: 120px;
+  border: 1px solid #333;
+  border-radius: 8px;
+  background-color: #4e00cb;
+  color: #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5rem;
+}
+
+.deck-label {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #a8a5a0;
 }
 
 .hand-container {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  flex: 1;
 }
 
 .player-container {
-    flex: 1;
-    text-align: center;
+  text-align: center;
+}
+
+.card-game-container h2 {
+  margin: 0.25rem 0;
+  font-size: 1.1rem;
 }
 
 .card-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .card {
-    width: 80px;
-    /* Adjust the card size as needed */
-    height: 120px;
-    /* Adjust the card size as needed */
-    border: 1px solid #333;
-    border-radius: 8px;
-    background-color: white;
-    margin: 5px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  width: 80px;
+  height: 120px;
+  border: 1px solid #333;
+  border-radius: 8px;
+  background-color: #ffffff;
+  margin: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-
-.deck {
-    width: 80px;
-    height: 120px;
-    border: 1px solid #333;
-    border-radius: 8px;
-    background-color: #4e00cb;
-    display: flex;
-    justify-content: center;
-    /* Center horizontally */
-    align-items: center;
+.face-down {
+  background: repeating-linear-gradient(45deg, #22303f, #22303f 6px, #1a2530 6px, #1a2530 12px);
+  color: #8fa6bd;
+  font-size: 2rem;
+  font-weight: bold;
 }
 
 .user-card img,
 .computer-card img {
-    max-width: 100%;
-    max-height: 100%;
+  max-width: 100%;
+  max-height: 100%;
 }
 
-.card.user-card.selected {
-    border: 2px solid transparent;
-    /* Set transparent border to maintain original size */
-    box-shadow: 0 0 5px gold,
-        /* Gold shadow */
-        0 0 0 2px gold inset;
-    /* Inset shadow to maintain size */
-}
 .card.user-card {
   padding: 0;
   cursor: pointer;
-  background-color: #fff;
+  background-color: #ffffff;
 }
 
 .card.user-card:disabled {
   cursor: default;
+  opacity: 1;
 }
 
 .card.user-card.selected {
@@ -100,27 +141,34 @@
 }
 
 .hand-name {
-  color: #a8a5a0;
   margin: 0.25rem 0 0;
+  color: #a8a5a0;
 }
 
-.card-error {
-  color: #ff8a80;
+.card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.button-quiet {
+  background-color: transparent;
+  border: 1px solid #4a4e51;
+  color: #d6d3cd;
+}
+
+.button-quiet:hover:not(:disabled) {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
 }
 
 @media (max-width: 768px) {
-  .container-cardgame {
-    width: 92%;
-  }
-
   .card-game-container {
     flex-direction: column;
     align-items: center;
     gap: 1rem;
-  }
-
-  .left-section {
-    max-width: none;
   }
 
   .card-container {

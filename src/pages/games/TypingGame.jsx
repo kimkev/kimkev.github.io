@@ -1,17 +1,18 @@
 import { useEffect, useRef, useState } from 'react';
 
-import { PASSAGES } from '../../data/passages';
 import ProjectHeader from '../../components/ProjectHeader';
+import { PASSAGES } from '../../data/passages';
 import './TypingGame.css';
 
-const TIME_LIMIT = 30;
+const DURATIONS = [15, 30, 60];
 
 const pickPassage = () => PASSAGES[Math.floor(Math.random() * PASSAGES.length)];
 
 const TypingGame = () => {
+  const [duration, setDuration] = useState(30);
   const [passage, setPassage] = useState(pickPassage);
   const [typed, setTyped] = useState('');
-  const [timeLeft, setTimeLeft] = useState(TIME_LIMIT);
+  const [timeLeft, setTimeLeft] = useState(duration);
   const [isRunning, setIsRunning] = useState(false);
   const inputRef = useRef(null);
 
@@ -31,24 +32,31 @@ const TypingGame = () => {
     return () => clearInterval(intervalId);
   }, [isRunning]);
 
+  useEffect(() => {
+    if (isRunning) inputRef.current?.focus();
+  }, [isRunning]);
+
   const startGame = () => {
     setPassage(pickPassage());
     setTyped('');
-    setTimeLeft(TIME_LIMIT);
+    setTimeLeft(duration);
     setIsRunning(true);
   };
 
   const resetGame = () => {
     setTyped('');
-    setTimeLeft(TIME_LIMIT);
+    setTimeLeft(duration);
     setIsRunning(false);
   };
 
-  useEffect(() => {
-    if (isRunning) inputRef.current?.focus();
-  }, [isRunning]);
+  const changeDuration = (nextDuration) => {
+    setDuration(nextDuration);
+    setTyped('');
+    setTimeLeft(nextDuration);
+    setIsRunning(false);
+  };
 
-  const elapsedSeconds = TIME_LIMIT - timeLeft;
+  const elapsedSeconds = duration - timeLeft;
   const wordsTyped = typed.trim() ? typed.trim().split(/\s+/).length : 0;
   const wpm = elapsedSeconds > 0 ? Math.round(wordsTyped / (elapsedSeconds / 60)) : 0;
   const finished = timeLeft === 0;
@@ -63,10 +71,28 @@ const TypingGame = () => {
     <div className="container container-typinggame">
       <ProjectHeader
         title="Typing test"
-        description={`Type the passage below. You have ${TIME_LIMIT} seconds — speed and accuracy update live.`}
+        description={`Type the passage below. You have ${duration} seconds — speed and accuracy update live.`}
         tags={['Timers', 'Refs']}
         source="https://github.com/kimkev/kimkev.github.io/blob/master/src/pages/games/TypingGame.jsx"
       />
+
+      <div className="typing-durations" role="group" aria-label="Test length">
+        {DURATIONS.map((seconds) => (
+          <button
+            key={seconds}
+            type="button"
+            aria-pressed={duration === seconds}
+            onClick={() => changeDuration(seconds)}
+            disabled={isRunning}
+          >
+            {seconds}s
+          </button>
+        ))}
+      </div>
+
+      <p id="typing-passage" className="visually-hidden">
+        {passage}
+      </p>
 
       <div className="randomText" aria-hidden="true">
         {passage.split('').map((character, index) => {
@@ -101,23 +127,34 @@ const TypingGame = () => {
         }}
         disabled={!isRunning}
         placeholder={isRunning ? '' : 'Press Start to begin'}
+        aria-describedby="typing-passage"
         autoComplete="off"
         spellCheck="false"
       />
 
-      <div className="typing-stats" role="status">
-        <span>Time: {timeLeft}s</span>
-        <span>WPM: {wpm}</span>
-        <span>Accuracy: {accuracy}%</span>
-      </div>
-
-      {finished && <p className="typing-result">Time is up. Start again for a new passage.</p>}
+      {finished ? (
+        <div className="typing-result-card" role="status">
+          <h2>Time&apos;s up</h2>
+          <p className="typing-result-score">
+            {wpm} WPM · {accuracy}% accuracy
+          </p>
+          <p className="typing-result-detail">
+            You typed {wordsTyped} {wordsTyped === 1 ? 'word' : 'words'} in {duration} seconds.
+          </p>
+        </div>
+      ) : (
+        <div className="typing-stats">
+          <span>Time: {timeLeft}s</span>
+          <span>WPM: {wpm}</span>
+          <span>Accuracy: {accuracy}%</span>
+        </div>
+      )}
 
       <div className="buttons">
-        <button type="button" className="start-button" onClick={startGame}>
+        <button type="button" onClick={startGame} disabled={isRunning}>
           {finished ? 'Start again' : 'Start'}
         </button>
-        <button type="button" className="reset-button" onClick={resetGame}>
+        <button type="button" className="button-quiet" onClick={resetGame}>
           Reset
         </button>
       </div>

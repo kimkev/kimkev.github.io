@@ -1,11 +1,23 @@
-const formatCell = (value) => {
+const MAX_DEPTH = 3;
+
+const formatCell = (value, depth = 0) => {
   if (value === null || value === undefined) return '';
-  if (Array.isArray(value)) return value.join(', ');
-  if (typeof value === 'object') return JSON.stringify(value);
+  if (value === '') return '';
+  if (Array.isArray(value)) {
+    if (depth >= MAX_DEPTH) return `${value.length} items`;
+    return value.map((item) => formatCell(item, depth + 1)).join(', ');
+  }
+  if (typeof value === 'object') {
+    if (depth >= MAX_DEPTH) return '…';
+    return Object.entries(value)
+      .map(([key, nested]) => `${key}: ${formatCell(nested, depth + 1)}`)
+      .join(' · ');
+  }
+  if (typeof value === 'boolean') return value ? 'Yes' : 'No';
   return String(value);
 };
 
-const DataTable = ({ rows, columns, emptyMessage = 'No data yet.' }) => {
+const DataTable = ({ rows, columns, caption, emptyMessage = 'No data yet.' }) => {
   if (!rows.length) {
     return <p className="table-empty">{emptyMessage}</p>;
   }
@@ -13,6 +25,7 @@ const DataTable = ({ rows, columns, emptyMessage = 'No data yet.' }) => {
   return (
     <div className="table-scroll">
       <table>
+        {caption && <caption className="visually-hidden">{caption}</caption>}
         <thead>
           <tr>
             {columns.map((column) => (

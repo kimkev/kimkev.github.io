@@ -6,14 +6,24 @@ import './CardGame.css';
 
 const API = 'https://deckofcardsapi.com/api/deck';
 const HAND_SIZE = 5;
+const REQUEST_TIMEOUT_MS = 10000;
+
+const requestJson = async (url) => {
+  const signal =
+    typeof AbortSignal !== 'undefined' && typeof AbortSignal.timeout === 'function'
+      ? AbortSignal.timeout(REQUEST_TIMEOUT_MS)
+      : undefined;
+  const response = await fetch(url, { signal });
+
+  if (!response.ok) throw new Error(`Card service responded with ${response.status}.`);
+
+  return response.json();
+};
 
 const drawCards = async (deckId, count) => {
   if (count === 0) return { cards: [], remaining: null };
 
-  const response = await fetch(`${API}/${deckId}/draw/?count=${count}`);
-  if (!response.ok) throw new Error(`Card draw failed (${response.status})`);
-
-  return response.json();
+  return requestJson(`${API}/${deckId}/draw/?count=${count}`);
 };
 
 const randomIndices = (length, count) => {
@@ -43,12 +53,11 @@ const CardGame = () => {
     setError('');
     setHasMulliganed(false);
     setSelected(new Set());
+    setDeckId('');
     setStatus('Shuffling a new deck…');
 
     try {
-      const deckResponse = await fetch(`${API}/new/shuffle/?deck_count=1`);
-      if (!deckResponse.ok) throw new Error(`Deck request failed (${deckResponse.status})`);
-      const deck = await deckResponse.json();
+      const deck = await requestJson(`${API}/new/shuffle/?deck_count=1`);
 
       const [userDraw, computerDraw] = await Promise.all([
         drawCards(deck.deck_id, HAND_SIZE),
@@ -59,7 +68,7 @@ const CardGame = () => {
       setUserCards(userDraw.cards);
       setComputerCards(computerDraw.cards);
       setRemaining(computerDraw.remaining ?? deck.remaining - HAND_SIZE * 2);
-      setStatus('Tap cards to select them, then mulligan once to replace them.');
+      setStatus('Select any cards, then mulligan once to replace them.');
     } catch (startError) {
       setError(startError.message);
       setStatus('Could not start the game.');
@@ -84,7 +93,7 @@ const CardGame = () => {
   };
 
   const mulligan = async () => {
-    if (loading || hasMulliganed) return;
+    if (loading || hasMulliganed || !deckId) return;
 
     setLoading(true);
     setError('');
@@ -127,7 +136,8 @@ const CardGame = () => {
   };
 
   const yourHand = userCards.length === HAND_SIZE ? describeHand(userCards) : '';
-  const computerHand = computerCards.length === HAND_SIZE ? describeHand(computerCards) : '';
+  const computerHand =
+    hasMulliganed && computerCards.length === HAND_SIZE ? describeHand(computerCards) : '';
 
   return (
     <div className="container container-cardgame">
@@ -138,10 +148,27 @@ const CardGame = () => {
         source="https://github.com/kimkev/kimkev.github.io/blob/master/src/pages/games/CardGame.jsx"
       />
 
-      <div className="instructions-container">
-        <p className="instructions-message">{status}</p>
-        {error && <p className="card-error">{error}</p>}
-      </div>
+      <p className="instructions-message" role="status">
+        {status}
+      </p>
+
+      {error && (
+        <div className="card-error" role="alert">
+          <p>{error}</p>
+          <button type="button" onClick={startGame} disabled={loading}>
+            Try again
+          </button>
+        </div>
+      )}
+
+      <details className="card-rules">
+        <summary>How to play</summary>
+        <ul>
+          <li>Each side is dealt five cards from a shuffled deck.</li>
+          <li>Select any of your cards and press Mulligan once to replace them.</li>
+          <li>The stronger poker hand wins; equal hands are a draw.</li>
+        </ul>
+      </details>
 
       <div className="card-game-container">
         <div className="left-section">
@@ -150,10 +177,12 @@ const CardGame = () => {
             type="button"
             className="deck"
             onClick={startGame}
+            disabled={loading}
             aria-label="Shuffle a new deck and deal again"
           >
             {remaining}
           </button>
+          <p className="deck-label">cards left</p>
         </div>
 
         <div className="hand-container">
@@ -161,8 +190,15 @@ const CardGame = () => {
             <h2>Computer&apos;s Cards</h2>
             <div className="card-container">
               {computerCards.map((card, index) => (
-                <div className="card computer-card" key={`${card.code}-${index}`}>
-                  <img src={card.image} alt={`${card.value} of ${card.suit}`} />
+                <div
+                  className={hasMulliganed ? 'card computer-card' : 'card computer-card face-down'}
+                  key={`${card.code}-${index}`}
+                  role="img"
+                  aria-label={
+                    hasMulliganed ? `${card.value} of ${card.suit}` : 'Face-down card'
+                  }
+                >
+                  {hasMulliganed ? <img src={card.image} alt="" /> : <span aria-hidden="true">?</span>}
                 </div>
               ))}
             </div>
@@ -189,9 +225,21 @@ const CardGame = () => {
             {yourHand && <p className="hand-name">{yourHand}</p>}
           </div>
 
-          <button type="button" className="mulligan-button" onClick={mulligan} disabled={loading}>
-            Mulligan {selected.size > 0 ? `(${selected.size})` : ''}
-          </button>
+          <div className="card-actions">
+            <button
+              type="button"
+              className="mulligan-button"
+              onClick={mulligan}
+              disabled={loading || hasMulliganed}
+            >
+              Mulligan {selected.size > 0 ? `(${selected.size})` : ''}
+            </button>
+            {hasMulliganed && (
+              <button type="button" className="button-quiet" onClick={startGame} disabled={loading}>
+                Play again
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>

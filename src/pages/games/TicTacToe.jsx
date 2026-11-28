@@ -4,9 +4,12 @@ import ProjectHeader from '../../components/ProjectHeader';
 import { createBoard, getWinner, isDraw, otherPlayer } from '../../lib/ticTacToe';
 import './TicTacToe.css';
 
+const EMPTY_SCORES = { X: 0, O: 0, draws: 0 };
+
 const TicTacToe = () => {
   const [board, setBoard] = useState(createBoard);
   const [currentPlayer, setCurrentPlayer] = useState('X');
+  const [scores, setScores] = useState(EMPTY_SCORES);
 
   const result = getWinner(board);
   const draw = !result && isDraw(board);
@@ -17,13 +20,28 @@ const TicTacToe = () => {
 
     const nextBoard = [...board];
     nextBoard[index] = currentPlayer;
+    const nextResult = getWinner(nextBoard);
+    const nextDraw = !nextResult && isDraw(nextBoard);
+
     setBoard(nextBoard);
+
+    if (nextResult) {
+      setScores((current) => ({ ...current, [nextResult.winner]: current[nextResult.winner] + 1 }));
+    } else if (nextDraw) {
+      setScores((current) => ({ ...current, draws: current.draws + 1 }));
+    }
+
     setCurrentPlayer(otherPlayer(currentPlayer));
   };
 
   const resetBoard = () => {
     setBoard(createBoard());
-    setCurrentPlayer(Math.random() < 0.5 ? 'X' : 'O');
+    setCurrentPlayer('X');
+  };
+
+  const resetScores = () => {
+    setScores(EMPTY_SCORES);
+    resetBoard();
   };
 
   let status = `Next player: ${currentPlayer}`;
@@ -38,9 +56,25 @@ const TicTacToe = () => {
         tags={['React state', 'Two-player']}
         source="https://github.com/kimkev/kimkev.github.io/blob/master/src/pages/games/TicTacToe.jsx"
       />
-      <div className="status" role="status">
+
+      <dl className="scoreboard" aria-label="Score">
+        <div>
+          <dt>X</dt>
+          <dd>{scores.X}</dd>
+        </div>
+        <div>
+          <dt>O</dt>
+          <dd>{scores.O}</dd>
+        </div>
+        <div>
+          <dt>Draws</dt>
+          <dd>{scores.draws}</dd>
+        </div>
+      </dl>
+
+      <p className="status" role="status">
         {status}
-      </div>
+      </p>
 
       <div className="board">
         {board.map((square, index) => {
@@ -61,9 +95,14 @@ const TicTacToe = () => {
         })}
       </div>
 
-      <button type="button" onClick={resetBoard}>
-        Reset
-      </button>
+      <div className="board-actions">
+        <button type="button" onClick={resetBoard}>
+          New game
+        </button>
+        <button type="button" className="button-quiet" onClick={resetScores}>
+          Reset scores
+        </button>
+      </div>
     </div>
   );
 };

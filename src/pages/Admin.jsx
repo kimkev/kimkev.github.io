@@ -67,7 +67,7 @@ const Admin = () => {
   if (authState === 'unconfigured') {
     return (
       <div className="admin-message">
-        <h2>Admin is not configured</h2>
+        <h1>Admin is not configured</h1>
         <p>
           Add the <code>VITE_FIREBASE_*</code> values to <code>.env</code> and restart the dev
           server.
@@ -79,7 +79,7 @@ const Admin = () => {
   if (authState === 'signedOut') {
     return (
       <div className="admin-message">
-        <h2>Admin</h2>
+        <h1>Admin</h1>
         <p>Sign in with the allowlisted Google account.</p>
         <button type="button" onClick={handleSignIn}>
           Sign in with Google
@@ -92,7 +92,7 @@ const Admin = () => {
   if (authState === 'unauthorized') {
     return (
       <div className="admin-message">
-        <h2>Not authorized</h2>
+        <h1>Not authorized</h1>
         <p>
           Signed in as {user?.email}, which is not the admin account.
         </p>
@@ -106,7 +106,7 @@ const Admin = () => {
   if (authState === 'error') {
     return (
       <div className="admin-message">
-        <h2>Could not load analytics</h2>
+        <h1>Could not load analytics</h1>
         <p className="admin-error">{error}</p>
         <button type="button" onClick={() => signOut(auth)}>
           Sign out
@@ -120,7 +120,7 @@ const Admin = () => {
   return (
     <div className="admin">
       <div className="admin-header">
-        <h2>Analytics</h2>
+        <h1>Analytics</h1>
         <button type="button" onClick={() => signOut(auth)}>
           Sign out
         </button>
